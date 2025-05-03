@@ -1,39 +1,39 @@
 services:
   mysql:
     image: mysql:8.0
-    container_name: Marro_mysql
+    container_name: NewMarro_mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_DATABASE: marro
+      MYSQL_DATABASE: newmarro
       MYSQL_USER: user
       MYSQL_PASSWORD: password
     ports: 
-      - "3307:3306"
+      - "3308:3306"
     volumes: 
-      - mysql_data:/var/lib/mysql
+      - newmarro_mysql_data:/var/lib/mysql
 
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: Marro_phpmyadmin
+    container_name: NewMarro_phpmyadmin
     restart: always
     environment:
       PMA_HOST: mysql
       MYSQL_ROOT_PASSWORD: root_password
     ports:
-      - "8081:80"
+      - "8082:80"
 
   php:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: marro_php
+    container_name: newmarro_php
     restart: always
     volumes: 
       - .:/var/www/html
     ports:
-      - "80:80"
+      - "8000:80"
 
 volumes:
-  mysql_data:
+  newmarro_mysql_data:
