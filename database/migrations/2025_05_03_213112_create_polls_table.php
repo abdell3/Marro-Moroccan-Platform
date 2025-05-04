@@ -13,6 +13,9 @@ return new class extends Migration
     {
         Schema::create('polls', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('auteur_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('post_id')->constrained()->onDelete('cascade');
+            $table->enum('typeVote', ['single', 'multiple', 'updown', 'rating'])->default('single');
             $table->timestamps();
         });
     }

@@ -13,6 +13,18 @@ return new class extends Migration
     {
         Schema::create('reports', function (Blueprint $table) {
             $table->id();
+            
+            $table->morphs('reportable');
+            
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->timestamp('date')->nullable();
+            $table->text('raison')->nullable();
+            $table->foreignId('type_report_id')->constrained('report_types')->onDelete('restrict');
+            
+            $table->timestamp('handled_at')->nullable();
+            $table->foreignId('admin_id')->nullable()->constrained('users')->onDelete('set null'); 
+            $table->string('action_taken')->nullable();
+            $table->text('admin_notes')->nullable();
             $table->timestamps();
         });
     }
