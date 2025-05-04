@@ -2,10 +2,21 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Badge;
+use App\Models\Role;
+use App\Models\Permission;
+use App\Models\Comment;
+Use App\Models\Community;
+use App\Models\Poll;
+use App\Models\Post;
+use App\Models\Report;
+use App\Models\ReportType;
+use App\Models\Thread;
+use App\Models\SavePost;
 
 class User extends Authenticatable
 {
@@ -19,8 +30,14 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'prenom',
         'email',
         'password',
+        'role_id',
+        'badge_id',
+        'token',
+        'avatar',
+        'preferences'
     ];
 
     /**
@@ -45,4 +62,93 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function badge()
+    {
+        return $this->belongsTo(Badge::class);
+    }
+
+
+    public function communities()
+    {
+        return $this->belongsToMany(Community::class, 'user_community');
+    }
+
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class, 'auteur_id');
+    }
+
+
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'auteur_id');
+    }
+
+
+
+    public function polls()
+    {
+        return $this->hasMany(Poll::class, 'auteur_id');
+    }
+
+
+    public function reports()
+    {
+        return $this->hasMany(Report::class, 'user_id');
+    }
+
+    public function savedPosts()
+    {
+        return $this->belongsToMany(SavePost::class, 'save_posts');
+    }
+
+
+
+    public function threads()
+    {
+        return $this->hasMany(Thread::class);
+    }
+
+
+    public function hasPermission()
+    {
+        return $this->role?->permissions()->where('name', $permission)->exists() ?? false;
+    }
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
