@@ -69,9 +69,11 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
-    public function badge()
+    
+
+    public function badges()
     {
-        return $this->belongsTo(Badge::class);
+        return $this->belongsToMany(Badge::class);
     }
 
 
