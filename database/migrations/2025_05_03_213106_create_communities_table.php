@@ -13,6 +13,11 @@ return new class extends Migration
     {
         Schema::create('communities', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('creator_id')->constrained('users')->onDelete('cascade');
+            $table->string('theme_name');
+            $table->text('description')->nullable();
+            $table->text('rules')->nullable();
+            $table->string('icon')->nullable();
             $table->timestamps();
         });
     }
