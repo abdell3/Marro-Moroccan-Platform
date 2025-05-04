@@ -75,13 +75,4 @@ class Post extends Model
     {
         return $this->morphMany(Report::class, 'reportable');
     }
-
-
-
-
-
-
-
-
-
 }
