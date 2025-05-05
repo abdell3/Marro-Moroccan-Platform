@@ -27,7 +27,6 @@ class RoleSeeder extends Seeder
                 'role_description' => 'Membre standard qui peut créer des posts, commenter, voter et rejoindre des communautés',
             ],
         ];
-        
         Role::upsert($roles, ['role_name'], ['role_description']);
     }
 }

@@ -25,8 +25,6 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
-         
-       
         $roleUser = Role::where('role_name', 'Utilisateur')->first();
         
         $badgeId = Badge::inRandomOrder()->first()?->id;
@@ -47,7 +45,6 @@ class UserFactory extends Factory
         ];
     }
     
-
     public function admin()
     {
         return $this->state(function () {

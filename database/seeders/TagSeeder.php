@@ -14,7 +14,6 @@ class TagSeeder extends Seeder
     public function run(): void
     {
         $tags = [
-            
             [
                 'title' => 'Discussion',
                 'description' => 'Pour les posts qui visent à engager une conversation générale',
