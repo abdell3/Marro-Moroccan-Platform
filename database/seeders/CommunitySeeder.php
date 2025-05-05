@@ -13,10 +13,8 @@ class CommunitySeeder extends Seeder
      * Run the database seeds.
      */
     public function run(): void
-    {
-        
+    { 
         $mods = User::where('role_id', 2)->get();
-        
         
         if ($mods->count() == 0) {
             $admin = User::where('role_id', 1)->first();
@@ -27,8 +25,6 @@ class CommunitySeeder extends Seeder
                 return;
             }
         }
-        
-
         $communityData = [
             'Tech' => [
                 'description' => 'Pour discuter de technologie',
@@ -55,14 +51,11 @@ class CommunitySeeder extends Seeder
                 'rules' => "1. Sources fiables uniquement.\n2. Respectez le processus scientifique."
             ],
         ];
-        
        
         $i = 0;
         foreach ($communityData as $name => $data) {
-       
             $creator = $mods[$i % count($mods)];
             $i++;
-            
             
             $community = Community::create([
                 'creator_id' => $creator->id,
@@ -72,11 +65,8 @@ class CommunitySeeder extends Seeder
                 'created_at' => now()->subDays(rand(1, 30)),
                 'updated_at' => now(),
             ]);
-            
-    
             $creator->communities()->attach($community->id);
         }
-        
         Community::factory()->count(5)->create();
     }
 }

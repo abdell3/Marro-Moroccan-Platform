@@ -137,41 +137,39 @@ class BadgeSeeder extends Seeder
                 'icon' => 'badgess/admin.png'
             ],
       
-            // [
-            //     'name' => 'Verified',
-            //     'description' => 'Compte authentifié par l\'équipe d\'administration',
-            //     'criteria' => 'Avoir un compte vérifié par l\'administration',
-            //     'icon' => 'badges/verified.png',
-            // ],
-            // [
-            //     'name' => 'Daily Streak',
-            //     'description' => 'Utilisateur assidu qui se connecte quotidiennement',
-            //     'criteria' => 'Se connecter 30 jours consécutifs',
-            //     'icon' => 'badges/streak.png',
-            // ],
+            [
+                'name' => 'Verified',
+                'description' => 'Compte authentifié par l\'équipe d\'administration',
+                'criteria' => 'Avoir un compte vérifié par l\'administration',
+                'icon' => 'badges/verified.png',
+            ],
+            [
+                'name' => 'Daily Streak',
+                'description' => 'Utilisateur assidu qui se connecte quotidiennement',
+                'criteria' => 'Se connecter 30 jours consécutifs',
+                'icon' => 'badges/streak.png',
+            ],
             
             
-            // [
-            //     'name' => 'Tech',
-            //     'description' => 'Contributeur actif dans les communautés technologiques',
-            //     'criteria' => 'Être particulièrement actif et apprécié dans les communautés technologiques',
-            //     'icon' => 'badges/tech.png',
-            // ],
-            // [
-            //     'name' => 'Gamer',
-            //     'description' => 'Passionné de jeux vidéo qui participe activement',
-            //     'criteria' => 'Être particulièrement actif dans les communautés de jeux vidéo',
-            //     'icon' => 'badges/gamer.png',
-            // ],
-            // [
-            //     'name' => 'Art Enthusiast',
-            //     'description' => 'Passionné d\'art qui enrichit les communautés artistiques',
-            //     'criteria' => 'Contribuer régulièrement aux communautés artistiques',
-            //     'icon' => 'badges/art.png',
-            // ],
+            [
+                'name' => 'Tech',
+                'description' => 'Contributeur actif dans les communautés technologiques',
+                'criteria' => 'Être particulièrement actif et apprécié dans les communautés technologiques',
+                'icon' => 'badges/tech.png',
+            ],
+            [
+                'name' => 'Gamer',
+                'description' => 'Passionné de jeux vidéo qui participe activement',
+                'criteria' => 'Être particulièrement actif dans les communautés de jeux vidéo',
+                'icon' => 'badges/gamer.png',
+            ],
+            [
+                'name' => 'Art Enthusiast',
+                'description' => 'Passionné d\'art qui enrichit les communautés artistiques',
+                'criteria' => 'Contribuer régulièrement aux communautés artistiques',
+                'icon' => 'badges/art.png',
+            ],
         ];
-        
-        
         Badge::upsert($badges, ['name'], ['description', 'criteria', 'icon']);
     }
 }
