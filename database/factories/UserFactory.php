@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Badge;
+use App\Models\Role;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -23,19 +25,57 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+         
+       
+        $roleUser = Role::where('role_name', 'Utilisateur')->first();
+        
+        $badgeId = Badge::inRandomOrder()->first()?->id;
+        $roleId = $roleUser ? $roleUser->id : 3;
+        
         return [
-            'name' => fake()->name(),
+            'nom' => fake()->lastName(),
+            'prenom' => fake()->firstName(),
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => static::$password ??= Hash::make('password'),
+            'password' => bcrypt('password'),
+            'role_id' => $roleId,
+            'badge_id' => $badgeId,
+            'token' => null,
+            'avatar' => 'avatars/default.png',
+            'preferences' => null,
             'remember_token' => Str::random(10),
         ];
     }
+    
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
-    public function unverified(): static
+    public function admin()
+    {
+        return $this->state(function () {
+            $roleAdmin = Role::where('role_name', 'Admin')->first();
+            $roleId = $roleAdmin ? $roleAdmin->id : 1;
+            
+            return [
+                'role_id' => $roleId,
+                'avatar' => 'avatars/admin.png',
+            ];
+        });
+    }
+    
+
+    public function moderator()
+    {
+        return $this->state(function () {
+            $roleMod = Role::where('role_name', 'Moderateur')->first();
+            $roleId = $roleMod ? $roleMod->id : 2;
+            
+            return [
+                'role_id' => $roleId,
+                'avatar' => 'avatars/moderator.png',
+            ];
+        });
+    }
+
+    public function unverified(): Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
