@@ -21,7 +21,7 @@ class Poll extends Model
     ];
 
 
-    public function user()
+    public function auteur()
     {
         return $this->belongsTo(User::class, 'auteur_id');
     }
@@ -30,6 +30,13 @@ class Poll extends Model
     public function post()
     {
         return $this->belongsTo(Post::class, 'post_id');
+    }
+
+    public function voters()
+    {
+        return $this->belongsToMany(User::class, 'poll_user', 'poll_id', 'user_id')
+                    ->withPivot('vote_value')
+                    ->withTimestamps();
     }
 
 
