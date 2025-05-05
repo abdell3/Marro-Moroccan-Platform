@@ -132,5 +132,4 @@ class User extends Authenticatable
                     ->withPivot('vote_value')
                     ->withTimestamps();
     }
-
 }

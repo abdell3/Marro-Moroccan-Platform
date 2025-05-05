@@ -54,5 +54,35 @@ class Report extends Model
         return $this->belongsTo(User::class, 'admin_id');
     }
 
+    public function post()
+    {
+        return $this->belongsTo(Post::class, 'reportable_id')
+                    ->where('reportable_type', Post::class);
+    }
 
+    public function community()
+    {
+        return $this->belongsTo(Community::class, 'reportable_id')
+                    ->where('reportable_type', Community::class);
+    }
+   
+    public function scopeForPosts($query)
+    {
+        return $query->where('reportable_type', Post::class);
+    }
+    
+    public function scopeForCommunities($query)
+    {
+        return $query->where('reportable_type', Community::class);
+    }
+
+    public function scopeHandled($query)
+    {
+        return $query->whereNotNull('handled_at');
+    }
+
+    public function scopeUnhandled($query)
+    {
+        return $query->whereNull('handled_at');
+    }
 }

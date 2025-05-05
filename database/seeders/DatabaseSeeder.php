@@ -22,7 +22,11 @@ class DatabaseSeeder extends Seeder
             CommunitySeeder::class,
             PostSeeder::class,
             CommentSeeder::class,
-            PollSeeder::class
+            PollSeeder::class,
+            ReportTypeSeeder::class,
+            ReportSeeder::class,
+            ThreadSeeder::class,
+            SavePostSeeder::class
         ]);
     }
 }
