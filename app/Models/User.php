@@ -126,31 +126,11 @@ class User extends Authenticatable
         return $this->role?->permissions()->where('name', $permission)->exists() ?? false;
     }
 
-
+    public function voters()
+    {
+        return $this->belongsToMany(User::class, 'poll_user', 'poll_id', 'user_id')
+                    ->withPivot('vote_value')
+                    ->withTimestamps();
+    }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
