@@ -121,10 +121,34 @@ class User extends Authenticatable
     }
 
 
-    public function hasPermission()
+    public function hasPermission(string $permission)
     {
         return $this->role?->permissions()->where('name', $permission)->exists() ?? false;
     }
+
+    public function hasRole(string $roleName)
+    {
+        return $this->role?->role_name === $roleName;
+    }
+
+    public function hasAnyRole(array $roleNames)
+    {
+        if (!$this->role) {
+            return false;
+        }
+        return in_array($this->role->role_name, $roleNames);
+    }
+
+    public function isAdmin()
+    {
+        return $this->hasRole('Admin');
+    }
+
+    public function isModerator()
+    {
+        return $this->hasRole('Moderateur');
+    }
+
 
     public function voters()
     {
