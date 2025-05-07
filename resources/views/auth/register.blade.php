@@ -1,122 +1,120 @@
-<x-layouts.auth title="Inscription | Marro">
-    <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gradient-to-r from-purple-900 via-purple-800 to-blue-900">
-        <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
-            <div class="flex justify-center mb-6">
-                <x-ui.logo class="w-20 h-20" />
-            </div>
-            
-            <h2 class="text-center text-2xl font-bold text-gray-900 dark:text-white mb-6">Créez votre compte Marro</h2>
+<x-layouts.auth 
+    title="Inscription | Marro" 
+    heading="Créer un compte"
+>
+    <form method="POST" action="{{ route('register') }}" class="mt-6">
+        @csrf
 
-            <!-- Validation Errors -->
-            <x-ui.alert :message="$errors->first()" type="error" class="mb-4" />
-
-            <form method="POST" action="{{ route('register.post') }}" class="space-y-6">
-                @csrf
-
-                <!-- Nom -->
-                <div>
-                    <x-ui.input
-                        id="nom"
-                        type="text"
-                        name="nom"
-                        :value="old('nom')"
-                        placeholder="Nom"
-                        required
-                        autofocus
-                        icon="user"
-                    />
-                </div>
-
-                <!-- Prénom -->
-                <div>
-                    <x-ui.input
-                        id="prenom"
-                        type="text"
-                        name="prenom"
-                        :value="old('prenom')"
-                        placeholder="Prénom"
-                        required
-                        icon="user"
-                    />
-                </div>
-
-                <!-- Email Address -->
-                <div>
-                    <x-ui.input
-                        id="email"
-                        type="email"
-                        name="email"
-                        :value="old('email')"
-                        placeholder="Email"
-                        required
-                        icon="mail"
-                    />
-                </div>
-
-                <!-- Password -->
-                <div>
-                    <x-ui.input
-                        id="password"
-                        type="password"
-                        name="password"
-                        placeholder="Mot de passe"
-                        required
-                        icon="lock"
-                        togglePassword
-                    />
-                </div>
-
-                <!-- Confirm Password -->
-                <div>
-                    <x-ui.input
-                        id="password_confirmation"
-                        type="password"
-                        name="password_confirmation"
-                        placeholder="Confirmer le mot de passe"
-                        required
-                        icon="lock"
-                        togglePassword
-                    />
-                </div>
-
-                <!-- Terms and Conditions -->
-                <div>
-                    <label for="terms" class="inline-flex items-center">
-                        <x-ui.checkbox id="terms" name="terms" :checked="old('terms')" required />
-                        <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">
-                            J'accepte les <a href="#" class="underline text-purple-600 dark:text-blue-400 hover:text-purple-800 dark:hover:text-blue-500">conditions d'utilisation</a> et la <a href="#" class="underline text-purple-600 dark:text-blue-400 hover:text-purple-800 dark:hover:text-blue-500">politique de confidentialité</a>
-                        </span>
-                    </label>
-                </div>
-
-                <div class="flex items-center justify-center mt-4">
-                    <x-ui.button type="submit" class="w-full">
-                        S'inscrire
-                    </x-ui.button>
-                </div>
-                
-                <div class="flex items-center justify-center mt-4">
-                    <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100" href="{{ route('login') }}">
-                        Déjà inscrit?
-                    </a>
-                </div>
-            </form>
+        <div class="mb-4">
+            <label for="nom" class="block text-sm font-medium text-gray-700 mb-1">Nom</label>
+            <input 
+                type="text" 
+                id="nom" 
+                name="nom" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                value="{{ old('nom') }}" 
+                required 
+                autocomplete="family-name" 
+                autofocus
+            >
+            @error('nom')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
         </div>
-    </div>
+
+        <div class="mb-4">
+            <label for="prenom" class="block text-sm font-medium text-gray-700 mb-1">Prénom</label>
+            <input 
+                type="text" 
+                id="prenom" 
+                name="prenom" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                value="{{ old('prenom') }}" 
+                required 
+                autocomplete="given-name"
+            >
+            @error('prenom')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <div class="mb-4">
+            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Adresse email</label>
+            <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                value="{{ old('email') }}" 
+                required 
+                autocomplete="email"
+            >
+            @error('email')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <div class="mb-4">
+            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+            <input 
+                type="password" 
+                id="password" 
+                name="password" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                required 
+                autocomplete="new-password"
+            >
+            <p class="mt-1 text-xs text-gray-500">8 caractères minimum</p>
+            @error('password')
+                <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+            @enderror
+        </div>
+
+        <div class="mb-4">
+            <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Confirmer le mot de passe</label>
+            <input 
+                type="password" 
+                id="password_confirmation" 
+                name="password_confirmation" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-red-500 focus:border-red-500"
+                required 
+                autocomplete="new-password"
+            >
+        </div>
+
+        <div class="mb-6">
+            <div class="flex items-start">
+                <div class="flex items-center h-5">
+                    <input 
+                        type="checkbox" 
+                        id="terms" 
+                        name="terms" 
+                        class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
+                        required
+                    >
+                </div>
+                <div class="ml-3 text-sm">
+                    <label for="terms" class="text-gray-700">
+                        J'accepte les <a href="#" class="text-red-600 hover:text-red-500">conditions d'utilisation</a> et la <a href="#" class="text-red-600 hover:text-red-500">politique de confidentialité</a>
+                    </label>
+                    @error('terms')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <button 
+                type="submit" 
+                class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            >
+                S'inscrire
+            </button>
+        </div>
+    </form>
     
-    @push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Ajout d'animations spécifiques à la page d'inscription
-            gsap.from('#nom, #prenom, #email, #password, #password_confirmation, #terms', {
-                y: 20,
-                opacity: 0,
-                stagger: 0.1,
-                duration: 0.6,
-                delay: 0.5,
-                ease: 'power2.out'
-            });
-        });
-    </script>
-    @endpush
+    <div class="mt-6 text-center text-sm text-gray-500">
+        Vous avez déjà un compte? <a href="{{ route('login') }}" class="font-medium text-red-600 hover:text-red-500">Se connecter</a>
+    </div>
 </x-layouts.auth>
