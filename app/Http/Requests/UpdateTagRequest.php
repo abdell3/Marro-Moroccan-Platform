@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Auth\Guard;
+use Illuminate\Validation\Rule;
 
 class UpdateTagRequest extends FormRequest
 {
@@ -11,7 +13,7 @@ class UpdateTagRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return auth()->check() && auth()->user()->hasPermission('edit_tags');
     }
 
     /**
@@ -21,8 +23,25 @@ class UpdateTagRequest extends FormRequest
      */
     public function rules(): array
     {
+        $tagId = $this->route('tag')->id;
         return [
-            //
+            'title' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('tags')->ignore($tagId),
+            ],
+            'description' => 'nullable|string|max:255',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'title.required' => 'Le titre du tag est obligatoire',
+            'title.max' => 'Le titre ne peut pas dépasser 255 caractères',
+            'title.unique' => 'Ce tag existe déjà',
+            'description.max' => 'La description ne peut pas dépasser 255 caractères',
         ];
     }
 }
