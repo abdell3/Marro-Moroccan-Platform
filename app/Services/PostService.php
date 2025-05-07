@@ -7,10 +7,8 @@ use App\Services\Interfaces\PostServiceInterface;
 
 class PostService implements PostServiceInterface
 {
-    // Repository
     protected $postRepository;
 
-    // Constructeur
     public function __construct(PostRepositoryInterface $postRepository)
     {
         $this->postRepository = $postRepository;
@@ -30,7 +28,6 @@ class PostService implements PostServiceInterface
         if (!isset($data['datePublication'])) {
             $data['datePublication'] = now();
         }
-        
         if (!isset($data['typeContenu'])) {
             if (isset($data['media_path'])) {
                 $extension = pathinfo($data['media_path'], PATHINFO_EXTENSION);

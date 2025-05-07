@@ -3,6 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Illuminate\Contracts\Auth\Guard;
+
 
 class UpdateRoleRequest extends FormRequest
 {
@@ -11,7 +14,7 @@ class UpdateRoleRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return auth()->check() && auth()->user()->hasRole('Admin');
     }
 
     /**
@@ -21,8 +24,30 @@ class UpdateRoleRequest extends FormRequest
      */
     public function rules(): array
     {
+        $roleId = $this->route('role')->id;
         return [
-            //
+            'role_name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('roles', 'role_name')->ignore($roleId),
+            ],
+            'description' => 'nullable|string|max:255',
+            'permissions' => 'nullable|array',
+            'permissions.*' => 'exists:permissions,id',
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'role_name.required' => 'Le nom du rôle est obligatoire',
+            'role_name.max' => 'Le nom ne peut pas dépasser 255 caractères',
+            'role_name.unique' => 'Ce rôle existe déjà',
+            'description.max' => 'La description ne peut pas dépasser 255 caractères',
+            'permissions.array' => 'Les permissions doivent être un tableau',
+            'permissions.*.exists' => 'Une des permissions sélectionnées n\'existe pas',
+        ];
+    }
+
 }

@@ -6,6 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Validation\Rule;
 
+
 class UpdateTagRequest extends FormRequest
 {
     /**
