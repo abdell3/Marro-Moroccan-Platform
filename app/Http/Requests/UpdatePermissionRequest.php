@@ -3,6 +3,9 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Illuminate\Contracts\Auth\Guard;
+
 
 class UpdatePermissionRequest extends FormRequest
 {
@@ -11,7 +14,7 @@ class UpdatePermissionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return auth()->check() && auth()->user()->hasRole('Admin');;
     }
 
     /**
@@ -21,8 +24,23 @@ class UpdatePermissionRequest extends FormRequest
      */
     public function rules(): array
     {
+        $permissionId = $this->route('permission')->id;
         return [
-            //
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('permissions')->ignore($permissionId),
+            ],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'Le nom de la permission est obligatoire',
+            'name.max' => 'Le nom ne peut pas dépasser 255 caractères',
+            'name.unique' => 'Cette permission existe déjà',
         ];
     }
 }

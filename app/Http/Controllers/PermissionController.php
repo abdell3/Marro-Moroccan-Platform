@@ -5,62 +5,62 @@ namespace App\Http\Controllers;
 use App\Models\Permission;
 use App\Http\Requests\StorePermissionRequest;
 use App\Http\Requests\UpdatePermissionRequest;
+use App\Services\Interfaces\PermissionServiceInterface;
+use Illuminate\Routing\Controller;
+
 
 class PermissionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $permissionService;
+    
+    public function __construct(PermissionServiceInterface $permissionService)
+    {
+        $this->permissionService = $permissionService;
+        $this->middleware('check.role:Admin');
+    }
+   
     public function index()
     {
-        //
+        $permissions = $this->permissionService->getAllPermissionsAlpha();
+        return view('admin.permissions.index', compact('permissions'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('admin.permissions.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StorePermissionRequest $request)
     {
-        //
+        $data = $request->validated();
+        $permission = $this->permissionService->createPermission($data);
+        return redirect()->route('permissions.index')
+            ->with('success', 'La permission a été créée avec succès!');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Permission $permission)
     {
-        //
+        $roles = $permission->roles;
+        return view('admin.permissions.show', compact('permission', 'roles'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Permission $permission)
     {
-        //
+        return view('admin.permissions.edit', compact('permission'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdatePermissionRequest $request, Permission $permission)
     {
-        //
+        $data = $request->validated();
+        $this->permissionService->updatePermission($permission->id, $data);
+        return redirect()->route('permissions.index')
+            ->with('success', 'La permission a été mise à jour avec succès!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Permission $permission)
     {
-        //
+        $this->permissionService->deletePermission($permission->id);
+        return redirect()->route('permissions.index')
+            ->with('success', 'La permission a été supprimée avec succès!');
     }
 }
