@@ -12,7 +12,6 @@
     @endphp
     
     @if($userVote !== null)
-        <!-- Résultats du sondage (après vote) -->
         <div class="space-y-3 mb-4">
             @foreach($results['results'] as $value => $data)
                 <div>
@@ -48,7 +47,6 @@
             @endif
         </div>
     @else
-        <!-- Formulaire de vote -->
         <form action="{{ route('polls.vote', $poll) }}" method="POST">
             @csrf
             <div class="space-y-4">
