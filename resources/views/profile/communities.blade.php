@@ -1,170 +1,101 @@
 <x-layouts.app title="Mes communautés | Marro">
-    <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-        <div class="bg-white shadow overflow-hidden rounded-lg">
-            <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex justify-between items-center">
-                <div>
-                    <h2 class="text-xl font-medium text-gray-900">Mes communautés</h2>
-                    <p class="mt-1 text-sm text-gray-500">Les communautés que vous suivez</p>
-                </div>
-                
-                <a href="{{ route('communities.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                    <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                    </svg>
-                    Découvrir des communautés
-                </a>
-            </div>
-            
-            <div class="px-4 py-5 sm:p-6">
-                @if(count($communities) > 0)
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        @foreach($communities as $community)
-                            <div class="bg-gray-50 rounded-lg shadow-sm overflow-hidden">
-                                <div class="h-24 bg-gradient-to-r from-red-500 to-purple-500 relative">
-                                    @if($community->banner)
-                                        <img src="{{ asset($community->banner) }}" alt="{{ $community->name }}" class="w-full h-full object-cover">
-                                    @endif
-                                    
-                                    <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2">
-                                        <div class="bg-white rounded-full h-16 w-16 border-4 border-white shadow-sm flex items-center justify-center overflow-hidden">
-                                            @if($community->avatar)
-                                                <img src="{{ asset($community->avatar) }}" alt="{{ $community->name }}" class="h-full w-full object-cover">
-                                            @else
-                                                <div class="bg-red-100 h-full w-full flex items-center justify-center">
-                                                    <span class="text-red-600 font-bold text-xl">{{ substr($community->name, 0, 1) }}</span>
-                                                </div>
-                                            @endif
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Mes communautés</h1>
+        <p class="text-gray-600 dark:text-gray-400">Gérez les communautés que vous avez rejointes</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- Communautés rejointes -->
+        <div class="md:col-span-2">
+            <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+                <div class="p-6">
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-6">Communautés rejointes</h2>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        @forelse(Auth::user()->communities as $community)
+                            <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-md transition duration-150 ease-in-out">
+                                <a href="{{ route('communities.show', $community) }}" class="block">
+                                    <div class="p-4">
+                                        <div class="flex items-center mb-3">
+                                            <div class="flex-shrink-0 w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center text-xl font-bold text-white">
+                                                {{ substr($community->theme_name, 0, 1) }}
+                                            </div>
+                                            <div class="ml-3">
+                                                <div class="text-lg font-medium text-gray-900 dark:text-white">{{ $community->theme_name }}</div>
+                                                <div class="text-sm text-gray-500 dark:text-gray-400">{{ $community->followers->count() }} membres</div>
+                                            </div>
                                         </div>
+                                        <p class="text-gray-600 dark:text-gray-400 text-sm mb-3">
+                                            {{ Str::limit($community->description, 100) }}
+                                        </p>
                                     </div>
-                                </div>
+                                </a>
                                 
-                                <div class="px-4 pt-10 pb-4 text-center">
-                                    <h3 class="text-lg font-medium text-gray-900">
-                                        <a href="{{ route('communities.show', $community) }}" class="hover:text-red-600">
-                                            {{ $community->name }}
-                                        </a>
-                                    </h3>
-                                    
-                                    <p class="mt-1 text-sm text-gray-500 line-clamp-2">{{ $community->description }}</p>
-                                    
-                                    <div class="mt-4 flex justify-between items-center px-2">
-                                        <span class="text-xs text-gray-500">{{ $community->members_count }} membres</span>
-                                        <span class="text-xs text-gray-500">{{ $community->posts_count }} posts</span>
-                                    </div>
-                                    
-                                    <div class="mt-4 flex justify-between">
-                                        <a href="{{ route('communities.show', $community) }}" class="text-sm font-medium text-red-600 hover:text-red-500">
-                                            Voir
-                                        </a>
-                                        
-                                        @if($community->user_id === auth()->id())
-                                            <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2.5 py-0.5 rounded">Créateur</span>
-                                        @else
-                                            <form action="{{ route('communities.unfollow', $community) }}" method="POST">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-sm font-medium text-gray-600 hover:text-red-500">
-                                                    Ne plus suivre
-                                                </button>
-                                            </form>
-                                        @endif
-                                    </div>
+                                <div class="bg-gray-50 dark:bg-gray-700 px-4 py-3 border-t border-gray-200 dark:border-gray-600">
+                                    <form action="{{ route('communities.unfollow', $community) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="w-full inline-flex justify-center items-center px-4 py-2 border border-gray-300 bg-gray-100 text-sm font-medium rounded-md text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:bg-gray-600 dark:text-gray-200 dark:border-gray-700 dark:hover:bg-gray-500">
+                                            <svg class="h-5 w-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" d="M5 10a1 1 0 011-1h8a1 1 0 110 2H6a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                                            </svg>
+                                            Quitter
+                                        </button>
+                                    </form>
                                 </div>
                             </div>
-                        @endforeach
+                        @empty
+                            <div class="col-span-2 text-center py-8">
+                                <p class="text-gray-500 dark:text-gray-400">Vous n'avez pas encore rejoint de communautés.</p>
+                                <a href="{{ route('communities.index') }}" class="mt-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                    Explorer les communautés
+                                </a>
+                            </div>
+                        @endforelse
                     </div>
-                    
-                    <div class="mt-6">
-                        {{ $communities->links() }}
-                    </div>
-                @else
-                    <div class="text-center py-12">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                        <h3 class="mt-2 text-sm font-medium text-gray-900">Aucune communauté suivie</h3>
-                        <p class="mt-1 text-sm text-gray-500">Rejoignez des communautés pour voir leur contenu dans votre fil.</p>
-                        <div class="mt-6">
-                            <a href="{{ route('communities.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
-                                Découvrir des communautés
-                            </a>
-                        </div>
-                    </div>
-                @endif
+                </div>
             </div>
         </div>
-        
-        @if(count($ownedCommunities) > 0)
-            <div class="mt-8 bg-white shadow overflow-hidden rounded-lg">
-                <div class="px-4 py-5 sm:px-6 border-b border-gray-200 flex justify-between items-center">
-                    <div>
-                        <h2 class="text-xl font-medium text-gray-900">Communautés que vous gérez</h2>
-                        <p class="mt-1 text-sm text-gray-500">Les communautés dont vous êtes l'administrateur</p>
+
+        <!-- Barre latérale -->
+        <div>
+            <!-- Communautés populaires -->
+            <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden mb-6">
+                <div class="p-6">
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Communautés populaires</h2>
+                    <div class="space-y-4">
+                        @foreach(App\Models\Community::withCount('followers')->orderBy('followers_count', 'desc')->take(5)->get() as $popularCommunity)
+                            @if(!Auth::user()->communities->contains($popularCommunity->id))
+                                <a href="{{ route('communities.show', $popularCommunity) }}" class="flex items-center p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition">
+                                    <div class="flex-shrink-0 w-10 h-10 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center text-lg font-bold text-white">
+                                        {{ substr($popularCommunity->theme_name, 0, 1) }}
+                                    </div>
+                                    <div class="ml-3">
+                                        <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $popularCommunity->theme_name }}</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ $popularCommunity->followers_count }} membres</div>
+                                    </div>
+                                </a>
+                            @endif
+                        @endforeach
                     </div>
-                    
-                    <a href="{{ route('communities.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                        <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-                        </svg>
+                    <div class="mt-4 text-center">
+                        <a href="{{ route('communities.index') }}" class="text-red-600 hover:text-red-700 text-sm font-medium">
+                            Voir toutes les communautés
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Créer une communauté -->
+            <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+                <div class="p-6">
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Créer une communauté</h2>
+                    <p class="text-gray-600 dark:text-gray-400 mb-4">Vous avez une passion ou un intérêt à partager? Créez votre propre communauté!</p>
+                    <a href="{{ route('communities.create') }}" class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                         Créer une communauté
                     </a>
                 </div>
-                
-                <div class="px-4 py-5 sm:p-6">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        @foreach($ownedCommunities as $community)
-                            <div class="bg-gray-50 rounded-lg shadow-sm overflow-hidden border-2 border-red-200">
-                                <div class="h-24 bg-gradient-to-r from-red-500 to-purple-500 relative">
-                                    @if($community->banner)
-                                        <img src="{{ asset($community->banner) }}" alt="{{ $community->name }}" class="w-full h-full object-cover">
-                                    @endif
-                                    
-                                    <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2">
-                                        <div class="bg-white rounded-full h-16 w-16 border-4 border-white shadow-sm flex items-center justify-center overflow-hidden">
-                                            @if($community->avatar)
-                                                <img src="{{ asset($community->avatar) }}" alt="{{ $community->name }}" class="h-full w-full object-cover">
-                                            @else
-                                                <div class="bg-red-100 h-full w-full flex items-center justify-center">
-                                                    <span class="text-red-600 font-bold text-xl">{{ substr($community->name, 0, 1) }}</span>
-                                                </div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <div class="px-4 pt-10 pb-4 text-center">
-                                    <div class="flex justify-center">
-                                        <span class="bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded">Administrateur</span>
-                                    </div>
-                                    
-                                    <h3 class="mt-2 text-lg font-medium text-gray-900">
-                                        <a href="{{ route('communities.show', $community) }}" class="hover:text-red-600">
-                                            {{ $community->name }}
-                                        </a>
-                                    </h3>
-                                    
-                                    <p class="mt-1 text-sm text-gray-500 line-clamp-2">{{ $community->description }}</p>
-                                    
-                                    <div class="mt-4 flex justify-between items-center px-2">
-                                        <span class="text-xs text-gray-500">{{ $community->members_count }} membres</span>
-                                        <span class="text-xs text-gray-500">{{ $community->posts_count }} posts</span>
-                                    </div>
-                                    
-                                    <div class="mt-4 flex justify-between">
-                                        <a href="{{ route('communities.show', $community) }}" class="text-sm font-medium text-red-600 hover:text-red-500">
-                                            Voir
-                                        </a>
-                                        
-                                        <a href="{{ route('communities.edit', $community) }}" class="text-sm font-medium text-gray-600 hover:text-red-500">
-                                            Gérer
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </div>
             </div>
-        @endif
+        </div>
     </div>
 </x-layouts.app>

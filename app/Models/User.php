@@ -110,10 +110,8 @@ class User extends Authenticatable
 
     public function savedPosts()
     {
-        return $this->belongsToMany(SavePost::class, 'save_posts');
+        return $this->belongsToMany(Post::class, 'save_posts');
     }
-
-
 
     public function threads()
     {
