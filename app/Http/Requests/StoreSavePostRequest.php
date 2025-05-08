@@ -11,7 +11,7 @@ class StoreSavePostRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return auth()->check();
     }
 
     /**
@@ -22,7 +22,17 @@ class StoreSavePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'post_id' => 'required|exists:posts,id',
+            'user_id' => 'sometimes|exists:users,id',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'post_id.required' => 'Le post est requis',
+            'post_id.exists' => 'Le post sélectionné n\'existe pas',
+            'user_id.exists' => 'L\'utilisateur sélectionné n\'existe pas',
         ];
     }
 }

@@ -11,7 +11,7 @@ class UpdatePollRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,18 @@ class UpdatePollRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'post_id' => 'sometimes|exists:posts,id',
+            'auteur_id' => 'sometimes|exists:users,id',
+            'typeVote' => 'sometimes|string|in:standard,etoiles,pouces',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'post_id.exists' => 'Le post sélectionné n\'existe pas',
+            'auteur_id.exists' => 'L\'auteur sélectionné n\'existe pas',
+            'typeVote.in' => 'Le type de vote doit être standard, etoiles ou pouces',
         ];
     }
 }

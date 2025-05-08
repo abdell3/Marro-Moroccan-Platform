@@ -5,62 +5,53 @@ namespace App\Http\Controllers;
 use App\Models\SavePost;
 use App\Http\Requests\StoreSavePostRequest;
 use App\Http\Requests\UpdateSavePostRequest;
+use App\Services\Interfaces\SavePostServiceInterface;
+use Illuminate\Routing\Controller;
 
 class SavePostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $savePostService;
+
+    public function __construct(SavePostServiceInterface $savePostService)
+    {
+        $this->savePostService = $savePostService;
+        $this->authorizeResource(SavePost::class, 'savePost');
+    }
+
     public function index()
     {
-        //
+        $savedPosts = $this->savePostService->getUserSavedPosts();
+        return view('save_posts.index', compact('savedPosts'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreSavePostRequest $request)
     {
-        //
+        $validated = $request->validated();
+        $result = $this->savePostService->savePost(
+            $validated['post_id'],
+            $validated['user_id'] ?? null
+        );
+
+        if (!$result) {
+            return redirect()->back()
+                ->with('error', 'Impossible de sauvegarder ce post.');
+        }
+
+        return redirect()->back()
+            ->with('success', 'Post sauvegardé avec succès!');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(SavePost $savePost)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(SavePost $savePost)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateSavePostRequest $request, SavePost $savePost)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(SavePost $savePost)
     {
-        //
+        $result = $this->savePostService->unsavePost(
+            $savePost->post_id,
+            $savePost->user_id
+        );
+        if (!$result) {
+            return redirect()->back()
+                ->with('error', 'Impossible de supprimer ce post sauvegardé.');
+        }
+        return redirect()->back()
+            ->with('success', 'Post retiré des favoris avec succès!');
     }
 }

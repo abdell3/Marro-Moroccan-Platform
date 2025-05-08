@@ -2,8 +2,10 @@
 
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\PollController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SavePostController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\ThreadController;
 use Illuminate\Support\Facades\Route;
@@ -83,6 +85,34 @@ Route::middleware('auth')->group(function () {
     Route::get('/threads/{thread}/edit', [ThreadController::class, 'edit'])->name('threads.edit');
     Route::put('/threads/{thread}', [ThreadController::class, 'update'])->name('threads.update');
     Route::delete('/threads/{thread}', [ThreadController::class, 'destroy'])->name('threads.destroy');
+
+
+
+    Route::get('/saved-posts', [SavePostController::class, 'index'])->name('saved-posts.index');
+    Route::post('/saved-posts', [SavePostController::class, 'store'])->name('saved-posts.store');
+    Route::delete('/saved-posts/{savePost}', [SavePostController::class, 'destroy'])->name('saved-posts.destroy');
+
+
+
+    Route::resource('polls', PollController::class, ['except' => ['edit', 'update', 'destroy']]);
+    Route::post('/polls/{poll}/vote', [PollController::class, 'vote'])->name('polls.vote');
+    Route::get('/polls/{poll}/results', [PollController::class, 'results'])->name('polls.results');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 });
 
 

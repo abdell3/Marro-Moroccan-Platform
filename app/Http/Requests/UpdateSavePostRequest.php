@@ -11,7 +11,8 @@ class UpdateSavePostRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        $savepost = $this->route('savepost');
+        return auth()->check() && auth()->id() == $savepost->user_id;
     }
 
     /**
@@ -22,7 +23,16 @@ class UpdateSavePostRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'post_id' => 'sometimes|exists:posts,id',
+            'user_id' => 'sometimes|exists:users,id',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'post_id.exists' => 'Le post sélectionné n\'existe pas',
+            'user_id.exists' => 'L\'utilisateur sélectionné n\'existe pas',
         ];
     }
 }
