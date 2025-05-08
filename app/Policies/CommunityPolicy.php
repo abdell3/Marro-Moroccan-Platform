@@ -13,7 +13,7 @@ class CommunityPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,7 +21,7 @@ class CommunityPolicy
      */
     public function view(User $user, Community $community): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -29,7 +29,7 @@ class CommunityPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -37,7 +37,7 @@ class CommunityPolicy
      */
     public function update(User $user, Community $community): bool
     {
-        return false;
+        return $user->id === $community->creator_id;;
     }
 
     /**
@@ -45,7 +45,7 @@ class CommunityPolicy
      */
     public function delete(User $user, Community $community): bool
     {
-        return false;
+        return $user->id === $community->creator_id;;
     }
 
     /**
@@ -53,7 +53,7 @@ class CommunityPolicy
      */
     public function restore(User $user, Community $community): bool
     {
-        return false;
+        return $user->id === $community->creator_id;;
     }
 
     /**
@@ -61,6 +61,6 @@ class CommunityPolicy
      */
     public function forceDelete(User $user, Community $community): bool
     {
-        return false;
+        return $user->id === $community->creator_id || $user->isAdmin();;
     }
 }

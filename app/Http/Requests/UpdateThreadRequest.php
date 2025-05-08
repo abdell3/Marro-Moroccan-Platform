@@ -11,7 +11,8 @@ class UpdateThreadRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        $thread = $this->route('thread');
+        return auth()->check() && auth()->id() == $thread->user_id;
     }
 
     /**
@@ -22,7 +23,18 @@ class UpdateThreadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => 'required|string|max:255',
+            'content' => 'required|string|min:10',
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'title.required' => 'Le titre est obligatoire',
+            'title.max' => 'Le titre ne peut pas dépasser 255 caractères',
+            'content.required' => 'Le contenu est obligatoire',
+            'content.min' => 'Le contenu doit avoir au moins 10 caractères',
         ];
     }
 }
