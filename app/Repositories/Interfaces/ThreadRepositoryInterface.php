@@ -2,6 +2,9 @@
 
 namespace App\Repositories\Interfaces;
 
+
+use App\Repositories\Interfaces\BaseRepositoryInterface;
+
 interface ThreadRepositoryInterface extends BaseRepositoryInterface
 {
     public function getLatestThreads($limit = 10);

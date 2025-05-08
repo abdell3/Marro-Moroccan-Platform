@@ -13,7 +13,7 @@ class PollPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,7 +21,7 @@ class PollPolicy
      */
     public function view(User $user, Poll $poll): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -29,7 +29,7 @@ class PollPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -37,7 +37,7 @@ class PollPolicy
      */
     public function update(User $user, Poll $poll): bool
     {
-        return false;
+        return $user->id === $poll->auteur_id || $user->isAdmin();
     }
 
     /**
@@ -45,7 +45,7 @@ class PollPolicy
      */
     public function delete(User $user, Poll $poll): bool
     {
-        return false;
+        return $user->id === $poll->auteur_id || $user->isAdmin();
     }
 
     /**
@@ -53,7 +53,7 @@ class PollPolicy
      */
     public function restore(User $user, Poll $poll): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 
     /**
@@ -61,6 +61,6 @@ class PollPolicy
      */
     public function forceDelete(User $user, Poll $poll): bool
     {
-        return false;
+        return $user->isAdmin();
     }
 }

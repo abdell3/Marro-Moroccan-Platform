@@ -2,65 +2,77 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Poll\VotePollRequest;
 use App\Models\Poll;
 use App\Http\Requests\StorePollRequest;
 use App\Http\Requests\UpdatePollRequest;
+use App\Services\Interfaces\PollServiceInterface;
+use Illuminate\Routing\Controller;
 
 class PollController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $pollService;
+
+    public function __construct(PollServiceInterface $pollService)
+    {
+        $this->pollService = $pollService;
+        $this->authorizeResource(Poll::class, 'poll');
+    }
+
+    
     public function index()
     {
-        //
+        $polls = $this->pollService->getAllPolls();
+        return view('polls.index', compact('polls'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('polls.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StorePollRequest $request)
     {
-        //
+        $validated = $request->validated();
+
+        $poll = $this->pollService->createPoll($validated);
+
+        if (!$poll) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Impossible de créer le sondage.');
+        }
+
+        return redirect()->route('posts.show', $validated['post_id'])
+            ->with('success', 'Sondage créé avec succès!');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Poll $poll)
     {
-        //
+        $results = $this->pollService->getPollResults($poll->id);
+        return view('polls.show', compact('poll', 'results'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Poll $poll)
+    public function vote(VotePollRequest $request, Poll $poll)
     {
-        //
+        $this->authorize('vote', $poll);
+        
+        $validated = $request->validated();
+        
+        $result = $this->pollService->vote($poll->id, $validated['vote_value']);
+
+        if (!$result) {
+            return redirect()->back()
+                ->with('error', 'Impossible de voter pour ce sondage.');
+        }
+
+        return redirect()->back()
+            ->with('success', 'Vote enregistré avec succès!');
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdatePollRequest $request, Poll $poll)
+    public function results(Poll $poll)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Poll $poll)
-    {
-        //
+        $results = $this->pollService->getPollResults($poll->id);
+        return view('polls.results', compact('poll', 'results'));
     }
 }
