@@ -3,29 +3,41 @@
 namespace App\Providers;
 
 use App\Repositories\BaseRepository;
+use App\Repositories\CommentRepository;
 use App\Repositories\CommunityRepository;
 use App\Repositories\Interfaces\BaseRepositoryInterface;
+use App\Repositories\Interfaces\CommentRepositoryInterface;
 use App\Repositories\Interfaces\CommunityRepositoryInterface;
 use App\Repositories\Interfaces\PermissionRepositoryInterface;
+use App\Repositories\Interfaces\PollRepositoryInterface;
 use App\Repositories\Interfaces\PostRepositoryInterface;
 use App\Repositories\Interfaces\RoleRepositoryInterface;
+use App\Repositories\Interfaces\SavePostRepositoryInterface;
 use App\Repositories\Interfaces\TagRepositoryInterface;
 use App\Repositories\Interfaces\ThreadRepositoryInterface;
 use App\Repositories\PermissionRepository;
+use App\Repositories\PollRepository;
 use App\Repositories\PostRepository;
 use App\Repositories\RoleRepository;
+use App\Repositories\SavePostRepository;
 use App\Repositories\TagRepository;
 use App\Repositories\ThreadRepository;
+use App\Services\CommentService;
 use App\Services\CommunityService;
+use App\Services\Interfaces\CommentServiceInterface;
 use App\Services\Interfaces\CommunityServiceInterface;
 use App\Services\Interfaces\PermissionServiceInterface;
+use App\Services\Interfaces\PollServiceInterface;
 use App\Services\Interfaces\PostServiceInterface;
 use App\Services\Interfaces\RoleServiceInterface;
+use App\Services\Interfaces\SavePostServiceInterface;
 use App\Services\Interfaces\TagServiceInterface;
 use App\Services\Interfaces\ThreadServiceInterface;
 use App\Services\PermissionService;
+use App\Services\PollService;
 use App\Services\PostService;
 use App\Services\RoleService;
+use App\Services\SavePostService;
 use App\Services\TagService;
 use App\Services\ThreadService;
 use Illuminate\Support\ServiceProvider;
@@ -113,6 +125,35 @@ class RepositoryServiceProvider extends ServiceProvider
             ThreadServiceInterface::class,
             ThreadService::class
         );
+
+
+
+        $this->app->bind(
+            SavePostRepositoryInterface::class,
+            SavePostRepository::class
+        );
+        $this->app->bind(
+            SavePostServiceInterface::class,
+            SavePostService::class
+        );
+
+
+        $this->app->bind(
+            PollRepositoryInterface::class,
+            PollRepository::class
+        );
+        $this->app->bind(
+            PollServiceInterface::class,
+            PollService::class
+        );
+
+
+        $this->app->bind(
+            CommentRepositoryInterface::class,
+            CommentRepository::class);
+        $this->app->bind(
+            CommentServiceInterface::class, 
+            CommentService::class);
     }
 
     /**

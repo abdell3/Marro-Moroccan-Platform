@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PollController;
@@ -99,7 +100,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/polls/{poll}/results', [PollController::class, 'results'])->name('polls.results');
 
 
-
+    Route::resource('comments', CommentController::class, ['except' => ['create']]);
+    Route::post('/comments/{comment}/reply', [CommentController::class, 'reply'])->name('comments.reply');
+    Route::get('/posts/{post}/comments', [CommentController::class, 'byPost'])->name('comments.by_post');
 
 
 

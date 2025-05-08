@@ -27,6 +27,7 @@ use App\Policies\SavePostPolicy;
 use App\Policies\TagPolicy;
 use App\Policies\ThreadPolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -55,6 +56,16 @@ class AuthServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        $this->registerPolicies();
+        foreach ($this->policies as $model => $policy) {
+            Gate::policy($model, $policy);
+        }
+
+        Gate::define('reply-to-comment', function ($user, $comment) {
+            return true; 
+        });
+        Gate::define('vote-poll', function ($user, $poll) {
+            return true;
+        });
+        
     }
 }

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\Comment;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateCommentRequest extends FormRequest
+class ReplyCommentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,13 +25,18 @@ class UpdateCommentRequest extends FormRequest
             'contenu' => 'required|string|min:1|max:1000',
         ];
     }
-    
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array<string, string>
+     */
     public function messages(): array
     {
         return [
-            'contenu.required' => 'Le contenu du commentaire est requis',
-            'contenu.min' => 'Le commentaire doit contenir au moins 1 caractère',
-            'contenu.max' => 'Le commentaire ne peut pas dépasser 1000 caractères',
+            'contenu.required' => 'Le contenu de la réponse est requis',
+            'contenu.min' => 'La réponse doit contenir au moins 1 caractère',
+            'contenu.max' => 'La réponse ne peut pas dépasser 1000 caractères',
         ];
     }
 }
