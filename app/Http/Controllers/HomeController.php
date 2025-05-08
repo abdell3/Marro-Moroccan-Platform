@@ -33,6 +33,8 @@ class HomeController extends Controller
         $recentPosts = $this->postService->getDerniersPosts(10);
         $popularCommunities = $this->communityService->getCommunitiesPopulaires(7);
         $popularTags = $this->tagService->getTagsPopulaires(10);
-        return view('welcome', compact('recentPosts', 'popularCommunities', 'popularTags'));
+        $isAuthenticated = auth()->check();
+        $user = auth()->user();
+        return view('welcome', compact('recentPosts', 'popularCommunities', 'popularTags', 'isAuthenticated', 'user'));
     }
 }
