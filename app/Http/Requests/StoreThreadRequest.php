@@ -11,7 +11,7 @@ class StoreThreadRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return auth()->check();;
     }
 
     /**
@@ -22,7 +22,27 @@ class StoreThreadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => 'required|string|max:255',
+            'content' => 'required|string|min:10',
+            'community_id' => 'required|exists:communities,id',
         ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'title.required' => 'Le titre est obligatoire',
+            'title.max' => 'Le titre ne peut pas dépasser 255 caractères',
+            'content.required' => 'Le contenu est obligatoire',
+            'content.min' => 'Le contenu doit avoir au moins 10 caractères',
+            'community_id.required' => 'Veuillez sélectionner une communauté',
+            'community_id.exists' => 'Cette communauté n\'existe pas',
+        ];
+    }
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'user_id' => auth()->id(),
+        ]);
     }
 }

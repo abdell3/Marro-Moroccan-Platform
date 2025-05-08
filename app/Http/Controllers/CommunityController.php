@@ -5,62 +5,97 @@ namespace App\Http\Controllers;
 use App\Models\Community;
 use App\Http\Requests\StoreCommunityRequest;
 use App\Http\Requests\UpdateCommunityRequest;
+use App\Services\Interfaces\CommunityServiceInterface;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class CommunityController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $communityService;
+    
+    public function __construct(CommunityServiceInterface $communityService)
+    {
+        $this->communityService = $communityService;
+        $this->middleware('auth')->except(['index', 'show']);
+    }
+    
     public function index()
     {
-        //
+        $communities = $this->communityService->getAllCommunitiesAlpha();
+        $populaires = $this->communityService->getCommunitiesPopulaires(5);
+        return view('communities.index', compact('communities', 'populaires'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('communities.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreCommunityRequest $request)
     {
-        //
+        $data = $request->validated();
+        $community = $this->communityService->createCommunity($data);
+        $this->communityService->followCommunity(Auth::id(), $community->id);
+        return redirect()
+            ->route('communities.show', $community->id)
+            ->with('success', 'La communauté a été créée avec succès!');
     }
-
-    /**
-     * Display the specified resource.
-     */
+    
     public function show(Community $community)
     {
-        //
+        $posts = $this->communityService->getPosts($community->id, 10);
+        $threads = $this->communityService->getThreads($community->id, 10);
+        $isFollowing = Auth::check() ? $this->communityService->userFollowsCommunity(Auth::id(), $community->id) : false;
+        $membersCount = $this->communityService->countMembers($community->id);
+        return view('communities.show', compact('community', 'posts', 'threads', 'isFollowing', 'membersCount'));
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Community $community)
     {
-        //
+        if (Auth::id() != $community->creator_id) {
+            return redirect()->route('communities.show', $community->id)
+                ->with('error', 'Vous n\'êtes pas autorisé à modifier cette communauté.');
+        }
+        return view('communities.edit', compact('community'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateCommunityRequest $request, Community $community)
     {
-        //
+        $data = $request->validated();
+        $this->communityService->updateCommunity($community->id, $data);
+        return redirect()->route('communities.show', $community->id)
+            ->with('success', 'La communauté a été mise à jour avec succès!');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Community $community)
     {
-        //
+        if (Auth::id() != $community->creator_id) {
+            return redirect()->route('communities.show', $community->id)
+                ->with('error', 'Vous n\'êtes pas autorisé à supprimer cette communauté.');
+        }
+        $this->communityService->deleteCommunity($community->id);
+        return redirect()
+            ->route('communities.index')
+            ->with('success', 'La communauté a été supprimée avec succès!');
+    }
+    
+    public function follow(Community $community)
+    {
+        $this->communityService->followCommunity(Auth::id(), $community->id);
+        return redirect()->back()->with('success', 'Vous suivez maintenant cette communauté.');
+    }
+    
+    public function unfollow(Community $community)
+    {
+        $this->communityService->unfollowCommunity(Auth::id(), $community->id);
+        return redirect()->back()->with('success', 'Vous ne suivez plus cette communauté.');
+    }
+    
+    public function search(Request $request)
+    {
+        $keyword = $request->input('q');
+        $communities = $this->communityService->searchCommunities($keyword);
+        return view('communities.search', compact('communities', 'keyword'));
     }
 }
