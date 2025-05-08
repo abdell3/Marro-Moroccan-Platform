@@ -1,148 +1,87 @@
-<x-layouts.app title="Modifier le profil | Marro">
-    <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10">
-        <div class="max-w-3xl mx-auto">
-            <div class="bg-white shadow overflow-hidden rounded-lg">
-                <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-                    <h2 class="text-xl font-medium text-gray-900">Modifier le profil</h2>
-                    <p class="mt-1 text-sm text-gray-500">Mettez à jour vos informations personnelles</p>
+<x-layouts.app title="Modifier mon profil | Marro">
+    <div class="max-w-2xl mx-auto">
+        <div class="mb-6">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Modifier mon profil</h1>
+            <p class="text-gray-600 dark:text-gray-400">Mettez à jour vos informations personnelles</p>
+        </div>
+
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+            <form action="{{ route('profile.update') }}" method="POST" class="p-6">
+                @csrf
+                @method('PUT')
+
+                <!-- Nom -->
+                <div class="mb-4">
+                    <label for="nom" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nom</label>
+                    <input type="text" name="nom" id="nom" value="{{ old('nom', Auth::user()->nom) }}" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    @error('nom')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
+
+                <!-- Prénom -->
+                <div class="mb-4">
+                    <label for="prenom" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Prénom</label>
+                    <input type="text" name="prenom" id="prenom" value="{{ old('prenom', Auth::user()->prenom) }}" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    @error('prenom')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Email -->
+                <div class="mb-4">
+                    <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Adresse email</label>
+                    <input type="email" name="email" id="email" value="{{ old('email', Auth::user()->email) }}" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                    @error('email')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Préférences -->
+                <div class="mb-6">
+                    <label for="preferences" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Préférences</label>
+                    <textarea name="preferences" id="preferences" rows="3" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">{{ old('preferences', Auth::user()->preferences) }}</textarea>
+                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Partagez un peu plus sur vos centres d'intérêt et vos préférences</p>
+                </div>
+
+                <!-- Boutons d'action -->
+                <div class="flex justify-end space-x-3">
+                    <a href="{{ route('profile.show') }}" class="inline-flex justify-center items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600">
+                        Annuler
+                    </a>
+                    <button type="submit" class="inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Avatar -->
+        <div class="mt-6 bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+            <div class="p-6">
+                <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Photo de profil</h2>
                 
-                <div class="px-4 py-5 sm:p-6">
-                    <form action="{{ route('profile.update') }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div>
-                                <x-form.input 
-                                    name="prenom" 
-                                    label="Prénom" 
-                                    :value="auth()->user()->prenom" 
-                                    required 
-                                />
-                            </div>
-                            
-                            <div>
-                                <x-form.input 
-                                    name="nom" 
-                                    label="Nom" 
-                                    :value="auth()->user()->nom" 
-                                    required 
-                                />
-                            </div>
-                            
-                            <div class="md:col-span-2">
-                                <x-form.input 
-                                    name="email" 
-                                    type="email" 
-                                    label="Adresse e-mail" 
-                                    :value="auth()->user()->email" 
-                                    required 
-                                />
-                            </div>
-                            
-                            <div class="md:col-span-2">
-                                <x-form.input 
-                                    name="username" 
-                                    label="Nom d'utilisateur" 
-                                    :value="auth()->user()->username" 
-                                    required 
-                                />
-                            </div>
-                            
-                            <div class="md:col-span-2">
-                                <x-form.textarea 
-                                    name="bio" 
-                                    label="Biographie" 
-                                    :value="auth()->user()->bio" 
-                                    help="Parlez un peu de vous (max. 200 caractères)"
-                                />
-                            </div>
-                            
-                            <div class="md:col-span-2 border-t border-gray-200 pt-5">
-                                <h3 class="text-lg font-medium text-gray-900 mb-4">Paramètres de notification</h3>
-                                
-                                <div class="space-y-4">
-                                    <x-form.checkbox 
-                                        name="notifications_email" 
-                                        label="Recevoir des notifications par e-mail" 
-                                        :checked="auth()->user()->notifications_email" 
-                                    />
-                                    
-                                    <x-form.checkbox 
-                                        name="notifications_posts" 
-                                        label="Notifications pour les réponses à mes posts" 
-                                        :checked="auth()->user()->notifications_posts" 
-                                    />
-                                    
-                                    <x-form.checkbox 
-                                        name="notifications_comments" 
-                                        label="Notifications pour les réponses à mes commentaires" 
-                                        :checked="auth()->user()->notifications_comments" 
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="mt-8 border-t border-gray-200 pt-5 flex justify-between">
-                            <x-ui.button 
-                                type="button" 
-                                variant="outline" 
-                                tag="a"
-                                href="{{ route('profile.show') }}"
-                            >
-                                Annuler
-                            </x-ui.button>
-                            
-                            <x-ui.button type="submit" variant="primary">
-                                Enregistrer les modifications
-                            </x-ui.button>
-                        </div>
-                    </form>
+                <div class="flex items-center mb-6">
+                    <div class="flex-shrink-0">
+                        <img class="h-24 w-24 rounded-full" src="{{ asset(Auth::user()->avatar ?? 'avatars/default.png') }}" alt="{{ Auth::user()->nom }}">
+                    </div>
+                    <div class="ml-6">
+                        <a href="{{ route('profile.avatar') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            Changer d'avatar
+                        </a>
+                    </div>
                 </div>
             </div>
-            
-            <div class="mt-8 bg-white shadow overflow-hidden rounded-lg">
-                <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
-                    <h2 class="text-xl font-medium text-gray-900">Sécurité du compte</h2>
-                    <p class="mt-1 text-sm text-gray-500">Mettez à jour votre mot de passe</p>
-                </div>
+        </div>
+
+        <!-- Sécurité -->
+        <div class="mt-6 bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
+            <div class="p-6">
+                <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Sécurité</h2>
                 
-                <div class="px-4 py-5 sm:p-6">
-                    <form action="{{ route('profile.password.update') }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        
-                        <div class="space-y-4">
-                            <x-form.input 
-                                name="current_password" 
-                                type="password" 
-                                label="Mot de passe actuel" 
-                                required 
-                            />
-                            
-                            <x-form.input 
-                                name="password" 
-                                type="password" 
-                                label="Nouveau mot de passe" 
-                                required 
-                            />
-                            
-                            <x-form.input 
-                                name="password_confirmation" 
-                                type="password" 
-                                label="Confirmez le nouveau mot de passe" 
-                                required 
-                            />
-                        </div>
-                        
-                        <div class="mt-6">
-                            <x-ui.button type="submit" variant="primary">
-                                Mettre à jour le mot de passe
-                            </x-ui.button>
-                        </div>
-                    </form>
-                </div>
+                <a href="{{ route('password.request') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600">
+                    Changer de mot de passe
+                </a>
             </div>
         </div>
     </div>
