@@ -49,24 +49,14 @@ Route::middleware('auth')->group(function () {
 
 
 
-    Route::get('/profile', function () {
-        return view('profile.show');
-    })->name('profile.show');
-    Route::get('/profile/edit', function () {
-        return view('profile.edit');
-    })->name('profile.edit');
-    Route::get('/profile/avatar', function () {
-        return view('profile.avatar');
-    })->name('profile.avatar');
-    Route::get('/profile/communities', function () {
-        return view('profile.communities');
-    })->name('profile.communities');
-    Route::get('/profile/saved-posts', function () {
-        return view('profile.saved-posts');
-    })->name('profile.saved-posts');
-    Route::get('/profile/settings', function () {
-        return view('profile.settings');
-    })->name('profile.settings');
+    Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [App\Http\Controllers\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile/avatar', [App\Http\Controllers\ProfileController::class, 'avatar'])->name('profile.avatar');
+    Route::put('/profile/avatar', [App\Http\Controllers\ProfileController::class, 'avatarUpdate'])->name('profile.avatar.update');
+    Route::get('/profile/communities', [App\Http\Controllers\ProfileController::class, 'communities'])->name('profile.communities');
+    Route::get('/profile/saved-posts', [App\Http\Controllers\ProfileController::class, 'savedPosts'])->name('profile.saved-posts');
+    Route::get('/profile/settings', [App\Http\Controllers\ProfileController::class, 'settings'])->name('profile.settings');
     
     Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
     Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
