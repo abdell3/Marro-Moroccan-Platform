@@ -15,7 +15,7 @@
                     <select name="community_id" id="community_id" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
                         <option value="">Sélectionner une communauté</option>
                         @foreach($communities as $community)
-                            <option value="{{ $community->id }}" {{ old('community_id') == $community->id ? 'selected' : '' }}>
+                            <option value="{{ $community->id }}" {{ old('community_id', $selectedCommunityId) == $community->id ? 'selected' : '' }}>
                                 {{ $community->theme_name }}
                             </option>
                         @endforeach
