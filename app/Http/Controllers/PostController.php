@@ -32,10 +32,15 @@ class PostController extends Controller
         return view('posts.index', compact('posts'));
     }
 
-    public function create()
+    public function create(Request $request)
     {
+        $communityId = $request->query('community_id');
         $communities = $this->communityService->getAllCommunities();
-        return view('posts.create', compact('communities'));
+
+        return view('posts.create', [
+            'communities' => $communities,
+            'selectedCommunityId' => $communityId
+        ]);
     }
 
     public function store(StorePostRequest $request)
