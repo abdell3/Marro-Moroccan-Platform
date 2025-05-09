@@ -150,3 +150,5 @@
                 </div>
             @endauth
         </div>
+    </div>
+</x-layouts.app>
