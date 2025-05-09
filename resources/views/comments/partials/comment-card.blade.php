@@ -2,7 +2,7 @@
     <!-- En-tête du commentaire -->
     <div class="flex items-start">
         <div class="flex-shrink-0">
-            <img class="h-9 w-9 rounded-full" src="{{ asset($comment->auteur->avatar ?? 'avatars/default.png') }}" alt="{{ $comment->auteur->nom ?? 'Utilisateur' }}">
+            <img class="h-9 w-9 rounded-full" src="{{ asset('storage/' . ($comment->auteur->avatar ?? 'avatars/default.png')) }}" alt="{{ $comment->auteur->nom ?? 'Utilisateur' }}">
         </div>
         <div class="ml-3 flex-1">
             <div class="flex items-center justify-between">
@@ -51,7 +51,7 @@
                         @csrf
                         <div class="flex">
                             <div class="flex-shrink-0 mr-2">
-                                <img class="h-8 w-8 rounded-full" src="{{ asset(Auth::user()->avatar ?? 'avatars/default.png') }}" alt="{{ Auth::user()->nom }}">
+                                <img class="h-8 w-8 rounded-full" src="{{ asset('storage/' . (Auth::user()->avatar ?? 'avatars/default.png')) }}" alt="{{ Auth::user()->nom }}">
                             </div>
                             <div class="flex-1">
                                 <textarea name="contenu" rows="2" class="w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="Écrire une réponse..."></textarea>
@@ -76,7 +76,7 @@
                         <div class="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg p-3">
                             <div class="flex items-start">
                                 <div class="flex-shrink-0">
-                                    <img class="h-8 w-8 rounded-full" src="{{ asset($reply->auteur->avatar ?? 'avatars/default.png') }}" alt="{{ $reply->auteur->nom ?? 'Utilisateur' }}">
+                                    <img class="h-8 w-8 rounded-full" src="{{ asset('storage/' . ($reply->auteur->avatar ?? 'avatars/default.png')) }}" alt="{{ $reply->auteur->nom ?? 'Utilisateur' }}">
                                 </div>
                                 <div class="ml-3 flex-1">
                                     <div class="flex items-center justify-between">

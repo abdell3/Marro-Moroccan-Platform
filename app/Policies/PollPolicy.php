@@ -63,4 +63,9 @@ class PollPolicy
     {
         return $user->isAdmin();
     }
+
+    public function vote(User $user, Poll $poll): bool
+    {
+        return true;
+    }
 }

@@ -59,6 +59,19 @@
                     <input type="text" name="tags" id="tags" value="{{ old('tags') }}" class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white" placeholder="jeux, tech, musique">
                     <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Ajoutez des tags pour faciliter la découverte de votre post</p>
                 </div>
+                
+                <!-- Option de sondage -->
+                <div class="mb-6">
+                    <button type="button" id="togglePollBtn" class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                        Ajouter un sondage
+                        <svg class="h-4 w-4 ml-1" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                </div>
+                
+                <!-- Section de création de sondage (initialement cachée) -->
+                @include('polls.partials.poll-create-form')
 
                 <!-- Boutons d'action -->
                 <div class="flex justify-end space-x-3">
