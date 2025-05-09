@@ -4,7 +4,7 @@
             <div class="bg-gradient-to-r from-purple-500 to-blue-500 h-32 relative">
                 <div class="absolute -bottom-16 left-6">
                     <div class="h-32 w-32 rounded-full bg-white dark:bg-gray-800 border-4 border-white dark:border-gray-800 overflow-hidden">
-                        <img src="{{ asset(Auth::user()->avatar ?? 'avatars/default.png') }}" alt="{{ Auth::user()->nom }}" class="h-full w-full object-cover">
+                        <img src="{{ asset('storage/' . (Auth::user()->avatar ?? 'avatars/default-avatar.png')) }}" alt="{{ Auth::user()->nom }}" class="h-full w-full object-cover">
                     </div>
                 </div>
             </div>

@@ -13,7 +13,7 @@
                 <div class="mb-6">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">Avatar actuel</label>
                     <div class="flex justify-center">
-                        <img class="h-32 w-32 rounded-full" src="{{ asset(Auth::user()->avatar ?? 'avatars/default.png') }}" alt="{{ Auth::user()->nom }}">
+                        <img class="h-32 w-32 rounded-full" src="{{ asset('storage/' . (Auth::user()->avatar ?? 'avatars/default-avatar.png')) }}" alt="{{ Auth::user()->nom }}">
                     </div>
                 </div>
 
