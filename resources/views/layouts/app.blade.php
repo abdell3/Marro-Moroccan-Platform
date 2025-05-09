@@ -116,7 +116,7 @@
                         <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open" class="flex items-center space-x-2 focus:outline-none">
                                 <div class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-700 flex items-center justify-center overflow-hidden">
-                                    <img src="{{ (isset($user) ? $user->avatar : (Auth::user() ? Auth::user()->avatar : '')) ?? asset('avatars/default.png') }}" alt="Avatar" class="h-full w-full object-cover">
+                                    <img src="{{ asset('storage/' . ((isset($user) ? $user->avatar : (Auth::user() ? Auth::user()->avatar : '')) ?? 'avatars/default-avatar.png')) }}" alt="Avatar" class="h-full w-full object-cover">
                                 </div>
                                 <span class="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-300">{{ (isset($user) ? $user->nom : (Auth::user() ? Auth::user()->nom : '')) ?? 'Utilisateur' }}</span>
                                 <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">

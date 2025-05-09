@@ -79,9 +79,11 @@
             <div class="p-6">
                 <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Sécurité</h2>
                 
-                <a href="{{ route('password.request') }}" class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600">
+                <p class="text-gray-600 dark:text-gray-400 mb-4">La fonctionnalité de changement de mot de passe sera disponible prochainement.</p>
+                
+                <button disabled class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-400 bg-gray-100 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500 dark:border-gray-600">
                     Changer de mot de passe
-                </a>
+                </button>
             </div>
         </div>
     </div>
