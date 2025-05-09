@@ -7,6 +7,7 @@ use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
 use App\Services\Interfaces\PostServiceInterface;
 use App\Services\Interfaces\CommunityServiceInterface;
+use App\Services\Interfaces\PollServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -63,6 +64,19 @@ class PostController extends Controller
             $data['media_type'] = $file->getMimeType();
         }
         $post = $this->postService->createPost($data);
+        if ($request->has('create_poll') && $request->input('create_poll') == '1') {
+            $pollService = app(PollServiceInterface::class);
+            $pollData = [
+                'post_id' => $post->id,
+                'auteur_id' => Auth::id(),
+                'typeVote' => $request->input('poll_type', 'standard')
+            ];
+            $poll = $pollService->createPoll($pollData);
+            if (!$poll) {
+                return redirect()->route('posts.show', $post->id)
+                    ->with('warning', 'Le post a été créé mais il y a eu un problème avec la création du sondage.');
+            }
+        }
         
         return redirect()->route('posts.show', $post->id)
             ->with('success', 'Le post a été créé avec succès!');
