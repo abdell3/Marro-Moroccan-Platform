@@ -21,23 +21,32 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 require __DIR__.'/auth.php';
 
 
+// Route explicite pour la création de posts avec le middleware create_post personnalisé
+Route::middleware('create_post')->get('/create-new-post', [PostController::class, 'create'])->name('posts.create.direct');
+
+
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
+
+// Route spécifique qui doit être déclarée avant la route avec paramètre dynamique
+Route::middleware('auth')->get('/posts/create', [PostController::class, 'create'])->name('posts.create');
+
+// Route avec paramètre dynamique - doit être après les routes spécifiques
 Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
 
 Route::get('/communities', [CommunityController::class, 'index'])->name('communities.index');
-Route::get('/communities/{community}', [CommunityController::class, 'show'])->name('communities.show');
 Route::get('/communities/search', [CommunityController::class, 'search'])->name('communities.search');
+Route::get('/communities/{community}', [CommunityController::class, 'show'])->name('communities.show');
 
 
 Route::get('/tags', [TagController::class, 'index'])->name('tags.index');
-Route::get('/tags/{tag}', [TagController::class, 'show'])->name('tags.show');
 Route::get('/tags/populaires', [TagController::class, 'populaires'])->name('tags.populaires');
 Route::get('/tags/search', [TagController::class, 'search'])->name('tags.search');
+Route::get('/tags/{tag}', [TagController::class, 'show'])->name('tags.show');
 
 
 Route::get('/threads', [ThreadController::class, 'index'])->name('threads.index');
-Route::get('/threads/{thread}', [ThreadController::class, 'show'])->name('threads.show');
 Route::get('/threads/search', [ThreadController::class, 'search'])->name('threads.search');
+Route::get('/threads/{thread}', [ThreadController::class, 'show'])->name('threads.show');
 Route::get('/communities/{community}/threads', [ThreadController::class, 'byCommunity'])->name('threads.by_community');
 
 
@@ -58,7 +67,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/saved-posts', [App\Http\Controllers\ProfileController::class, 'savedPosts'])->name('profile.saved-posts');
     Route::get('/profile/settings', [App\Http\Controllers\ProfileController::class, 'settings'])->name('profile.settings');
     
-    Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
     Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
     Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
     Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
