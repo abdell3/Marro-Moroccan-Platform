@@ -2,30 +2,31 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Comment\ReplyCommentRequest;
+use App\Http\Requests\ReplyCommentRequest;
 use App\Models\Comment;
 use App\Http\Requests\StoreCommentRequest;
 use App\Http\Requests\UpdateCommentRequest;
 use App\Models\Post;
 use App\Services\Interfaces\CommentServiceInterface;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class CommentController extends Controller
 {
+    use AuthorizesRequests;
+    
     protected $commentService;
 
     public function __construct(CommentServiceInterface $commentService)
     {
         $this->commentService = $commentService;
         $this->middleware('auth');
-        $this->authorizeResource(Comment::class, 'comment', [
-            'except' => ['store', 'reply']
-        ]);
     }
 
     public function index()
     {
+        $this->authorize('viewAny', Comment::class);
         $comments = $this->commentService->getCommentsByUser(Auth::id());
         return view('comments.index', compact('comments'));
     }
@@ -49,17 +50,20 @@ class CommentController extends Controller
 
     public function show(Comment $comment)
     {
+        $this->authorize('view', $comment);
         $replies = $this->commentService->getCommentReplies($comment->id);
         return view('comments.show', compact('comment', 'replies'));
     }
 
     public function edit(Comment $comment)
     {
+        $this->authorize('update', $comment);
         return view('comments.edit', compact('comment'));
     }
 
     public function update(UpdateCommentRequest $request, Comment $comment)
     {
+        $this->authorize('update', $comment);
         $validated = $request->validated();
         
         $result = $this->commentService->updateComment($comment->id, $validated);
@@ -75,6 +79,7 @@ class CommentController extends Controller
 
     public function destroy(Comment $comment)
     {
+        $this->authorize('delete', $comment);
         $postId = $comment->post_id;
         
         $result = $this->commentService->deleteComment($comment->id);
@@ -109,6 +114,7 @@ class CommentController extends Controller
 
     public function byPost(Post $post)
     {
+        $this->authorize('viewAny', Comment::class);
         $comments = $this->commentService->getRootCommentsByPost($post->id);
         return view('comments.by_post', compact('post', 'comments'));
     }
