@@ -168,6 +168,9 @@
                                         Déconnexion
                                     </button>
                                 </form>
+                                <a href="{{ route('logout.get') }}" class="block w-full text-left px-4 py-2 text-sm text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    Déconnexion (alternative)
+                                </a>
                             </div>
                         </div>
                         @else
