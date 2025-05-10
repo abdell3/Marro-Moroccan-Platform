@@ -2,65 +2,108 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Post;
+use App\Models\Comment;
+use App\Models\Community;
 use App\Models\Report;
-use App\Http\Requests\StoreReportRequest;
-use App\Http\Requests\UpdateReportRequest;
+use App\Services\Interfaces\ReportServiceInterface;
+use App\Services\Interfaces\ReportTypeServiceInterface;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ReportController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        //
+    protected $reportService;
+    protected $reportTypeService;
+
+    public function __construct(
+        ReportServiceInterface $reportService,
+        ReportTypeServiceInterface $reportTypeService
+    ) {
+        $this->reportService = $reportService;
+        $this->reportTypeService = $reportTypeService;
+        $this->middleware('auth');
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new report for a post.
      */
-    public function create()
+    public function createForPost(Post $post)
     {
-        //
+        $reportTypes = $this->reportTypeService->getAllReportTypes();
+        return view('reports.create', [
+            'reportable' => $post,
+            'reportableType' => 'post',
+            'reportTypes' => $reportTypes
+        ]);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Show the form for creating a new report for a comment.
      */
-    public function store(StoreReportRequest $request)
+    public function createForComment(Comment $comment)
     {
-        //
+        $reportTypes = $this->reportTypeService->getAllReportTypes();
+        return view('reports.create', [
+            'reportable' => $comment,
+            'reportableType' => 'comment',
+            'reportTypes' => $reportTypes
+        ]);
     }
 
     /**
-     * Display the specified resource.
+     * Show the form for creating a new report for a community.
      */
-    public function show(Report $report)
+    public function createForCommunity(Community $community)
     {
-        //
+        $reportTypes = $this->reportTypeService->getAllReportTypes();
+        return view('reports.create', [
+            'reportable' => $community,
+            'reportableType' => 'community',
+            'reportTypes' => $reportTypes
+        ]);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Store a newly created report in storage.
      */
-    public function edit(Report $report)
+    public function store(Request $request)
     {
-        //
+        $validatedData = $request->validate([
+            'reportable_type' => 'required|string|in:App\\Models\\Post,App\\Models\\Comment,App\\Models\\Community',
+            'reportable_id' => 'required|integer',
+            'type_report_id' => 'required|exists:report_types,id',
+            'raison' => 'required|string|max:1000',
+        ]);
+
+        $validatedData['user_id'] = Auth::id();
+        $validatedData['date'] = now();
+
+        $report = $this->reportService->createReport($validatedData);
+
+        return redirect()->back()->with('success', 'Votre signalement a été enregistré. Merci pour votre contribution à la communauté.');
     }
 
     /**
-     * Update the specified resource in storage.
+     * Handle AJAX report submission.
      */
-    public function update(UpdateReportRequest $request, Report $report)
+    public function ajaxReport(Request $request)
     {
-        //
-    }
+        $validatedData = $request->validate([
+            'reportable_type' => 'required|string|in:App\\Models\\Post,App\\Models\\Comment,App\\Models\\Community',
+            'reportable_id' => 'required|integer',
+            'type_report_id' => 'required|exists:report_types,id',
+            'raison' => 'required|string|max:1000',
+        ]);
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Report $report)
-    {
-        //
+        $validatedData['user_id'] = Auth::id();
+        $validatedData['date'] = now();
+
+        $report = $this->reportService->createReport($validatedData);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Votre signalement a été enregistré.'
+        ]);
     }
 }

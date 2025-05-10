@@ -12,6 +12,14 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
         parent::__construct($model);
     }
 
+    public function getDerniersPostsPagines($perPage = 15)
+    {
+        // Filtrons les posts avec des eager loading pour les relations
+        return $this->model->with(['auteur', 'community', 'tags', 'votes', 'comments', 'savedBy'])
+            ->orderBy('created_at', 'desc')
+            ->paginate($perPage);
+    }
+
     public function getDerniersPosts($limit = 10)
     {
         return $this->model->with(['auteur', 'community'])

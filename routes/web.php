@@ -13,6 +13,12 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\ThreadController;
 use Illuminate\Support\Facades\Route;
 
+// Route de diagnostic pour la pagination
+Route::get('/test-pagination', function() {
+    $posts = \App\Models\Post::orderBy('created_at', 'desc')->paginate(10);
+    return view('test-pagination', ['posts' => $posts]);
+});
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 
@@ -51,6 +57,12 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
     ->name('dashboard');
 
+    // Routes pour les rapports utilisateurs
+    Route::get('/report/post/{post}', [App\Http\Controllers\ReportController::class, 'createForPost'])->name('reports.post.create');
+    Route::get('/report/comment/{comment}', [App\Http\Controllers\ReportController::class, 'createForComment'])->name('reports.comment.create');
+    Route::get('/report/community/{community}', [App\Http\Controllers\ReportController::class, 'createForCommunity'])->name('reports.community.create');
+    Route::post('/reports', [App\Http\Controllers\ReportController::class, 'store'])->name('reports.store');
+    Route::post('/reports/ajax', [App\Http\Controllers\ReportController::class, 'ajaxReport'])->name('reports.ajax');
 
 
     Route::get('/profile', [App\Http\Controllers\ProfileController::class, 'show'])->name('profile.show');
@@ -135,20 +147,35 @@ Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/roles/{role}/permissions', [RoleController::class, 'assignPermissions'])->name('roles.permissions');
     Route::post('/roles/{role}/permissions', [RoleController::class, 'updatePermissions'])->name('roles.permissions.update');
     Route::resource('permissions', PermissionController::class);
-
+    
+    // Routes pour la gestion des types de rapports
+    Route::resource('report-types', Admin\ReportTypeController::class);
+    
+    // Routes pour la gestion des rapports
+    Route::get('/reports', [Admin\ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/{report}', [Admin\ReportController::class, 'show'])->name('reports.show');
+    Route::post('/reports/{report}/handle', [Admin\ReportController::class, 'handle'])->name('reports.handle');
+    Route::get('/reports-statistics', [Admin\ReportController::class, 'statistics'])->name('reports.statistics');
 });
 
 
 Route::middleware(['auth', 'role:Moderateur'])->prefix('moderator')->name('moderator.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('moderator.dashboard');
-    })->name('dashboard');
+    // Dashboard modérateur
+    Route::get('/dashboard', [App\Http\Controllers\Moderateur\DashboardController::class, 'index'])->name('dashboard');
     
-    Route::get('/reported-posts', function () {
-        return view('moderator.reported-posts');
-    })->name('reported-posts');
+    // Gestion des communautés du modérateur
+    Route::get('/communities', [App\Http\Controllers\Moderateur\DashboardController::class, 'communities'])->name('communities');
+    Route::get('/communities/{community}/members', [App\Http\Controllers\Moderateur\DashboardController::class, 'communityMembers'])->name('community.members');
+    Route::get('/communities/{community}/stats', [App\Http\Controllers\Moderateur\DashboardController::class, 'communityStats'])->name('community.stats');
+    Route::post('/communities/{community}/ban-user', [App\Http\Controllers\Moderateur\DashboardController::class, 'banUser'])->name('community.ban-user');
     
-    Route::get('/reported-comments', function () {
-        return view('moderator.reported-comments');
-    })->name('reported-comments');
+    // Routes pour la gestion des rapports par les modérateurs
+    Route::get('/reports', [App\Http\Controllers\Moderateur\ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/{report}', [App\Http\Controllers\Moderateur\ReportController::class, 'show'])->name('reports.show');
+    Route::post('/reports/{report}/handle', [App\Http\Controllers\Moderateur\ReportController::class, 'handle'])->name('reports.handle');
+    
+    // Routes spécifiques par type de contenu
+    Route::get('/reported-posts', [App\Http\Controllers\Moderateur\ReportController::class, 'posts'])->name('reports.posts');
+    Route::get('/reported-comments', [App\Http\Controllers\Moderateur\ReportController::class, 'comments'])->name('reports.comments');
+    Route::get('/reported-communities', [App\Http\Controllers\Moderateur\ReportController::class, 'communities'])->name('reports.communities');
 });

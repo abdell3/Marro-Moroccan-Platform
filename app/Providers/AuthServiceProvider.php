@@ -67,5 +67,9 @@ class AuthServiceProvider extends ServiceProvider
             return true;
         });
         
+        // Gate pour autoriser un modérateur à gérer sa propre communauté
+        Gate::define('manageCommunity', function ($user, $community) {
+            return $user->id === $community->owner_id;
+        });
     }
 }

@@ -34,7 +34,7 @@ class SavePostService implements SavePostServiceInterface
     {
         $userId = $userId ?? Auth::id();
         
-        return $this->savePostRepository->getSavedPostsByUser($userId);
+        return $this->savePostRepository->getSavedPostsByUser($userId, $perPage);
     }
 
     public function savePost($postId, $userId = null)

@@ -69,6 +69,11 @@ class PostService implements PostServiceInterface
         return $this->postRepository->delete($id);
     }
     
+    public function getDerniersPostsPagines($perPage = 15)
+    {
+        return $this->postRepository->getDerniersPostsPagines($perPage);
+    }
+    
     public function getDerniersPosts($limit = 10)
     {
         return $this->postRepository->getDerniersPosts($limit);

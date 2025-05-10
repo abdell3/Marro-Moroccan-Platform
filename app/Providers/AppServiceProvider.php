@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,8 +20,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Blade::componentNamespace('App\\View\\Components', 'ui');
-
-        Blade::componentNamespace('App\\View\\Components\\Layouts', 'layouts');
+        // Utiliser notre vue de pagination personnalisée
+        Paginator::defaultView('pagination.simple');
+        
+        // Ou utiliser Bootstrap (décommenté pour utiliser Bootstrap)
+        // Paginator::useBootstrap();
     }
 }

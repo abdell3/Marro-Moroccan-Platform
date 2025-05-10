@@ -9,6 +9,7 @@ interface PostServiceInterface
     public function createPost($data);
     public function updatePost($id, $data);
     public function deletePost($id);
+    public function getDerniersPostsPagines($perPage = 15);
     public function getDerniersPosts($limit = 10);
     public function getPostsPopulaires($limit = 10);
     public function getPostsByCommunity($communityId, $paginate = 15);

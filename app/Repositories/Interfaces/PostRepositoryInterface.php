@@ -6,6 +6,8 @@ use App\Repositories\Interfaces\BaseRepositoryInterface;
 
 interface PostRepositoryInterface extends BaseRepositoryInterface
 {
+    public function getDerniersPostsPagines($perPage = 15);
+
     public function getDerniersPosts($limit = 10);
 
     public function getPostsPopulaires($limit = 10);

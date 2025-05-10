@@ -43,6 +43,47 @@
                             </div>
                         @endforelse
                     </div>
+                    
+                    <!-- Pagination -->
+                    @if(isset($recentPosts) && $recentPosts instanceof \Illuminate\Pagination\LengthAwarePaginator && $recentPosts->total() > $recentPosts->perPage())
+                        <div class="mt-6">
+                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                <!-- Lien précédent -->
+                                @if ($recentPosts->onFirstPage())
+                                    <span class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 cursor-not-allowed">
+                                        Précédent
+                                    </span>
+                                @else
+                                    <a href="{{ $recentPosts->previousPageUrl() }}" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        Précédent
+                                    </a>
+                                @endif
+                                
+                                <!-- Liens de pagination -->
+                                @for ($i = 1; $i <= $recentPosts->lastPage(); $i++)
+                                    <a href="{{ $recentPosts->url($i) }}" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium {{ $i == $recentPosts->currentPage() ? 'text-red-500 bg-red-50' : 'text-gray-700 hover:bg-gray-50' }}">
+                                        {{ $i }}
+                                    </a>
+                                @endfor
+                                
+                                <!-- Lien suivant -->
+                                @if ($recentPosts->hasMorePages())
+                                    <a href="{{ $recentPosts->nextPageUrl() }}" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                        Suivant
+                                    </a>
+                                @else
+                                    <span class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 cursor-not-allowed">
+                                        Suivant
+                                    </span>
+                                @endif
+                            </nav>
+                            
+                            <!-- Information sur la pagination -->
+                            <div class="text-xs text-gray-600 mt-2">
+                                Affichage de {{ $recentPosts->firstItem() ?? 0 }} à {{ $recentPosts->lastItem() ?? 0 }} sur {{ $recentPosts->total() }} posts
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
         </div>
