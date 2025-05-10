@@ -12,11 +12,11 @@ class SavePostRepository extends BaseRepository implements SavePostRepositoryInt
         parent::__construct($model);
     }
 
-    public function getSavedPostsByUser($userId)
+    public function getSavedPostsByUser($userId, $perPage = 15)
     {
         return $this->model->where('user_id', $userId)
                          ->with('post')
-                         ->get();
+                         ->paginate($perPage);
     }
 
     public function checkIfPostIsSaved($userId, $postId)

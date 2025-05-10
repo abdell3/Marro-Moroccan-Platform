@@ -90,6 +90,14 @@
                                         </button>
                                     </form>
                                 @endif
+                                
+                                <!-- Bouton Signaler -->
+                                <a href="{{ route('reports.post.create', $post) }}" class="flex items-center text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-500">
+                                    <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21a2 2 0 012 2v7.5l-1 1-5.5-5.5M7 21h10a2 2 0 002-2v-4"></path>
+                                    </svg>
+                                    <span>Signaler</span>
+                                </a>
                             @endauth
                         </div>
 

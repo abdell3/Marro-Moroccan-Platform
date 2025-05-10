@@ -55,24 +55,27 @@
         <!-- Onglets -->
         <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
             <div class="border-b border-gray-200 dark:border-gray-700">
-                <nav class="flex -mb-px" x-data="{ activeTab: 'posts' }">
-                    <button @click="activeTab = 'posts'" :class="activeTab === 'posts' ? 'border-red-500 text-red-600 dark:text-red-500' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-600'" class="w-1/3 py-4 px-1 text-center border-b-2 font-medium text-sm">
+                <nav class="flex -mb-px">
+                    <a href="{{ route('profile.show', ['tab' => 'posts']) }}" class="w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm {{ $activeTab === 'posts' ? 'border-red-500 text-red-600 dark:text-red-500' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-600' }}">
                         Mes posts
-                    </button>
-                    <button @click="activeTab = 'comments'" :class="activeTab === 'comments' ? 'border-red-500 text-red-600 dark:text-red-500' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-600'" class="w-1/3 py-4 px-1 text-center border-b-2 font-medium text-sm">
+                    </a>
+                    <a href="{{ route('profile.show', ['tab' => 'comments']) }}" class="w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm {{ $activeTab === 'comments' ? 'border-red-500 text-red-600 dark:text-red-500' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-600' }}">
                         Mes commentaires
-                    </button>
-                    <button @click="activeTab = 'communities'" :class="activeTab === 'communities' ? 'border-red-500 text-red-600 dark:text-red-500' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-600'" class="w-1/3 py-4 px-1 text-center border-b-2 font-medium text-sm">
+                    </a>
+                    <a href="{{ route('profile.show', ['tab' => 'communities']) }}" class="w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm {{ $activeTab === 'communities' ? 'border-red-500 text-red-600 dark:text-red-500' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-600' }}">
                         Mes communautés
-                    </button>
+                    </a>
+                    <a href="{{ route('profile.show', ['tab' => 'saved']) }}" class="w-1/4 py-4 px-1 text-center border-b-2 font-medium text-sm {{ $activeTab === 'saved' ? 'border-red-500 text-red-600 dark:text-red-500' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300 dark:hover:border-gray-600' }}">
+                        Sauvegardés
+                    </a>
                 </nav>
             </div>
             
             <div class="p-6">
                 <!-- Contenu des onglets -->
-                <div x-show="activeTab === 'posts'">
+                @if($activeTab === 'posts' && $posts)
                     <div class="space-y-6">
-                        @forelse(Auth::user()->posts->sortByDesc('created_at')->take(5) as $post)
+                        @forelse($posts as $post)
                             @include('posts.partials.post-card', ['post' => $post])
                         @empty
                             <div class="text-center py-8">
@@ -82,12 +85,19 @@
                                 </a>
                             </div>
                         @endforelse
+                        
+                        <!-- Pagination -->
+                        @if($posts->hasPages())
+                            <div class="mt-6">
+                                {{ $posts->links() }}
+                            </div>
+                        @endif
                     </div>
-                </div>
+                @endif
                 
-                <div x-show="activeTab === 'comments'" style="display: none;">
+                @if($activeTab === 'comments' && $comments)
                     <div class="space-y-4">
-                        @forelse(Auth::user()->comments->sortByDesc('created_at')->take(10) as $comment)
+                        @forelse($comments as $comment)
                             <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
                                 <div class="flex items-start">
                                     <div class="flex-1">
@@ -118,12 +128,19 @@
                                 </a>
                             </div>
                         @endforelse
+                        
+                        <!-- Pagination des commentaires -->
+                        @if($comments->hasPages())
+                            <div class="mt-6">
+                                {{ $comments->links() }}
+                            </div>
+                        @endif
                     </div>
-                </div>
+                @endif
                 
-                <div x-show="activeTab === 'communities'" style="display: none;">
+                @if($activeTab === 'communities' && $communities)
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        @forelse(Auth::user()->communities as $community)
+                        @forelse($communities as $community)
                             <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-md transition duration-150 ease-in-out">
                                 <a href="{{ route('communities.show', $community) }}" class="block">
                                     <div class="p-4">
@@ -151,7 +168,38 @@
                             </div>
                         @endforelse
                     </div>
-                </div>
+                    
+                    <!-- Pagination des communautés -->
+                    @if($communities->hasPages())
+                        <div class="mt-6">
+                            {{ $communities->links() }}
+                        </div>
+                    @endif
+                @endif
+                
+                @if($activeTab === 'saved' && $savedPosts)
+                    <div class="space-y-6">
+                        @forelse($savedPosts as $savedPost)
+                            @if(isset($savedPost->post))
+                                @include('posts.partials.post-card', ['post' => $savedPost->post])
+                            @endif
+                        @empty
+                            <div class="text-center py-8">
+                                <p class="text-gray-500 dark:text-gray-400">Vous n'avez pas encore sauvegardé de posts.</p>
+                                <a href="{{ route('posts.index') }}" class="mt-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                                    Parcourir les posts
+                                </a>
+                            </div>
+                        @endforelse
+                        
+                        <!-- Pagination -->
+                        @if($savedPosts->hasPages())
+                            <div class="mt-6">
+                                {{ $savedPosts->links() }}
+                            </div>
+                        @endif
+                    </div>
+                @endif
             </div>
         </div>
     </div>

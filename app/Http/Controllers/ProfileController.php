@@ -10,9 +10,42 @@ use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
 {
-    public function show()
+    public function show(Request $request)
     {
-        return view('profile.show');
+        $user = Auth::user();
+        $activeTab = $request->query('tab', 'posts'); // Paramètre d'URL au lieu de fragment
+        
+        // Récupérer les données en fonction de l'onglet actif
+        $posts = ($activeTab === 'posts') ? $this->getUserPosts($user->id, 10) : null;
+        $comments = ($activeTab === 'comments') ? $user->comments()->with('post')->latest()->paginate(10) : null;
+        $communities = ($activeTab === 'communities') ? $user->communities()->paginate(10) : null;
+        $savedPosts = ($activeTab === 'saved') ? app(\App\Services\Interfaces\SavePostServiceInterface::class)->getUserSavedPosts($user->id, 10) : null;
+        
+        // Pagination
+        if ($posts instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+            $posts->appends(['tab' => 'posts']);
+        }
+        
+        if ($comments instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+            $comments->appends(['tab' => 'comments']);
+        }
+        
+        if ($communities instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+            $communities->appends(['tab' => 'communities']);
+        }
+        
+        if ($savedPosts instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+            $savedPosts->appends(['tab' => 'saved']);
+        }
+        
+        return view('profile.show', compact('posts', 'comments', 'communities', 'savedPosts', 'activeTab'));
+    }
+    
+    private function getUserPosts($userId, $perPage = 10)
+    {
+        // Utilisation du PostService pour obtenir les posts paginés
+        $postService = app(\App\Services\Interfaces\PostServiceInterface::class);
+        return $postService->getPostsByUser($userId, $perPage);
     }
     public function edit()
     {
@@ -96,7 +129,16 @@ class ProfileController extends Controller
     }
     public function savedPosts()
     {
-        return view('profile.saved-posts');
+        $user = Auth::user();
+        $savedPostService = app(\App\Services\Interfaces\SavePostServiceInterface::class);
+        $savedPosts = $savedPostService->getUserSavedPosts($user->id, 10);
+        
+        // Assurons-nous que la pagination est maintenue
+        if ($savedPosts instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+            $savedPosts->withQueryString()->withPath('');
+        }
+        
+        return view('profile.saved-posts', compact('savedPosts'));
     }
     public function settings()
     {

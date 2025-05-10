@@ -60,6 +60,7 @@
                         >
                             <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Tableau de bord</a>
                             <a href="{{ route('profile.show') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil</a>
+                            <a href="{{ route('profile.saved-posts') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Posts sauvegardés</a>
                             
                             @if(auth()->user()->hasAnyRole(['Admin', 'Moderateur']))
                                 <div class="border-t border-gray-100 my-1"></div>
@@ -125,6 +126,7 @@
                 <div class="mt-3 space-y-1">
                     <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-base font-medium text-gray-700 hover:text-white hover:bg-red-600">Tableau de bord</a>
                     <a href="{{ route('profile.show') }}" class="block px-4 py-2 text-base font-medium text-gray-700 hover:text-white hover:bg-red-600">Profil</a>
+                    <a href="{{ route('profile.saved-posts') }}" class="block px-4 py-2 text-base font-medium text-gray-700 hover:text-white hover:bg-red-600">Posts sauvegardés</a>
                     
                     @if(auth()->user()->hasAnyRole(['Admin', 'Moderateur']))
                         @if(auth()->user()->hasRole('Admin'))

@@ -30,7 +30,16 @@ class PostController extends Controller
 
     public function index()
     {
-        $posts = $this->postService->getDerniersPosts(15);
+        // Option 1: Utilisons getDerniersPostsPagines à la place de getAllPosts
+        $posts = $this->postService->getDerniersPostsPagines(10);
+        
+        // Debug: Ajoutons des informations pour vérifier la pagination
+        if ($posts instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+            \Illuminate\Support\Facades\Log::info('Pagination trouvée: ' . $posts->total() . ' éléments, ' . $posts->perPage() . ' par page');
+        } else {
+            \Illuminate\Support\Facades\Log::warning('Pas de pagination!');  
+        }
+        
         return view('posts.index', compact('posts'));
     }
 
@@ -134,7 +143,11 @@ class PostController extends Controller
 
     public function edit(Post $post)
     {
-        $this->authorize('update', $post);
+        // Vérification manuelle des autorisations
+        if (!Auth::check() || Auth::id() != $post->auteur_id) {
+            abort(403, 'Vous n\'êtes pas autorisé à modifier ce post.');
+        }
+        
         $communities = $this->communityService->getAllCommunities();
         $tagService = app(TagServiceInterface::class);
         $existingTags = $tagService->getAllTagsAlpha();
@@ -175,7 +188,10 @@ class PostController extends Controller
 
     public function destroy(Post $post)
     {
-        $this->authorize('delete', $post);
+        // Vérification manuelle des autorisations
+        if (!Auth::check() || Auth::id() != $post->auteur_id) {
+            abort(403, 'Vous n\'êtes pas autorisé à supprimer ce post.');
+        }
         
         if ($post->media_path) {
             Storage::disk('public')->delete($post->media_path);
@@ -230,13 +246,29 @@ class PostController extends Controller
     
     public function save(Post $post)
     {
-        $this->postService->sauvegarderPost($post->id, Auth::id());
+        $result = $this->postService->sauvegarderPost($post->id, Auth::id());
+        
+        if (request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Post sauvegardé!'
+            ]);
+        }
+        
         return back()->with('success', 'Post sauvegardé!');
     }
     
     public function unsave(Post $post)
     {
-        $this->postService->enleverPostSauvegarde($post->id, Auth::id());
+        $result = $this->postService->enleverPostSauvegarde($post->id, Auth::id());
+        
+        if (request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Post retiré des favoris!'
+            ]);
+        }
+        
         return back()->with('success', 'Post retiré des favoris!');
     }
 }
