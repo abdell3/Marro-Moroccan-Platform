@@ -18,4 +18,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', [AuthController::class, 'dashboard'])->name('dashboard');
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    // Ajout d'une route GET pour la déconnexion
+    Route::get('/logout-get', [AuthController::class, 'logout'])->name('logout.get');
 });

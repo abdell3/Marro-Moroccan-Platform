@@ -126,7 +126,32 @@ class User extends Authenticatable
 
     public function hasRole(string $roleName)
     {
-        return $this->role?->role_name === $roleName;
+        // Forcer le chargement de la relation rôle si elle n'est pas déjà chargée
+        if (!$this->relationLoaded('role')) {
+            $this->load('role');
+        }
+        
+        // Vérifier si le rôle existe et si son nom correspond, en ignorant la casse
+        if (!$this->role) {
+            \Illuminate\Support\Facades\Log::warning('Utilisateur sans rôle', [
+                'user_id' => $this->id, 
+                'email' => $this->email,
+                'role_id' => $this->role_id
+            ]);
+            return false;
+        }
+        
+        $hasRole = strtolower($this->role->role_name) === strtolower($roleName);
+        \Illuminate\Support\Facades\Log::info('Vérification du rôle', [
+            'user_id' => $this->id,
+            'email' => $this->email,
+            'role_id' => $this->role_id,
+            'user_role' => $this->role->role_name,
+            'requested_role' => $roleName,
+            'match' => $hasRole ? 'oui' : 'non'
+        ]);
+        
+        return $hasRole;
     }
 
     public function hasAnyRole(array $roleNames)
@@ -134,7 +159,14 @@ class User extends Authenticatable
         if (!$this->role) {
             return false;
         }
-        return in_array($this->role->role_name, $roleNames);
+        
+        foreach ($roleNames as $roleName) {
+            if (strtolower($this->role->role_name) === strtolower($roleName)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     public function isAdmin()

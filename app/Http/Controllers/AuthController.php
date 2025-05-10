@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -56,21 +57,54 @@ class AuthController extends Controller
     public function login(LoginRequest $request)
     {
         $request->validated();
-        $parametre = $request->only('email', 'password');
+        $email = $request->email;
+        $password = $request->password;
         $remember = $request->filled('remember');
-
-        if (Auth::attempt($parametre, $remember)) {
-            $request->session()->regenerate();
-            /** @var \App\Models\User|null $user */
-            $user = Auth::user();
-            if ($user) {
-                $user->update([
-                    'last_login_at' => now()
-                ]);
-            }
-            
-            return $this->redirectBasedOnRole(Auth::user());
+        
+        Log::info('Tentative de connexion', ['email' => $email]);
+        
+        // Déconnecter tout utilisateur déjà connecté
+        if (Auth::check()) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
         }
+        
+        // Recherche directe de l'utilisateur
+        $user = User::where('email', $email)->first();
+        
+        if ($user && Hash::check($password, $user->password)) {
+            // Force le chargement de la relation rôle
+            $user->load('role');
+            
+            Log::info('Utilisateur trouvé', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'role_id' => $user->role_id,
+                'role_name' => $user->role?->role_name ?? 'Aucun rôle'
+            ]);
+            
+            // Connexion manuelle pour contourner le problème d'Auth::attempt
+            Auth::login($user, $remember);
+            $request->session()->regenerate();
+            
+            Log::info('Utilisateur authentifié manuellement', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'role_id' => $user->role_id,
+                'role_name' => $user->role?->role_name ?? 'Aucun rôle',
+                'auth_id' => Auth::id()
+            ]);
+            
+            $user->update(['last_login_at' => now()]);
+            
+            return $this->redirectBasedOnRole($user);
+        }
+        
+        Log::warning('Échec de connexion', [
+            'email' => $email,
+            'user_existe' => $user ? 'oui' : 'non'
+        ]);
 
         return back()->withErrors([
             'email' => 'Les identifiants fournis ne correspondent à aucun compte.',
@@ -79,11 +113,18 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
+        // Déconnecter l'utilisateur actuel
         Auth::logout();
+        
+        // Invalider la session
         $request->session()->invalidate();
+        
+        // Régénérer le jeton CSRF pour éviter les attaques
         $request->session()->regenerateToken();
         
-        return redirect()->route('home')->with('success', 'Vous avez été déconnecté avec succès.');
+        // Rediriger vers la page d'accueil avec un message de succès
+        return redirect()->route('home')
+            ->with('success', 'Vous avez été déconnecté avec succès.');
     }
 
    
@@ -94,11 +135,28 @@ class AuthController extends Controller
 
     private function redirectBasedOnRole(User $user)
     {
-        if ($user->hasRole('Admin')) {
+        Log::info('Redirection basée sur le rôle', [
+            'user_id' => $user->id,
+            'email' => $user->email,
+            'role_id' => $user->role_id,
+            'role_name' => $user->role?->role_name ?? 'Aucun rôle'
+        ]);
+        
+        $isAdmin = $user->hasRole('Admin');
+        $isModerator = $user->hasRole('Moderateur');
+        
+        Log::info('Vérification des rôles', [
+            'isAdmin' => $isAdmin ? 'oui' : 'non',
+            'isModerator' => $isModerator ? 'oui' : 'non',
+            'role_object' => $user->role ? json_encode($user->role->toArray()) : 'null'
+        ]);
+        
+        if ($isAdmin) {
             return redirect()->route('admin.dashboard');
         }
         
-        if ($user->hasRole('Moderateur')) {
+        if ($isModerator) {
+            Log::info('Redirection vers moderator.dashboard');
             return redirect()->route('moderator.dashboard');
         }
         

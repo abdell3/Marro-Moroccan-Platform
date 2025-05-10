@@ -154,6 +154,11 @@ class RepositoryServiceProvider extends ServiceProvider
         $this->app->bind(
             CommentServiceInterface::class, 
             CommentService::class);
+            
+        // Ajout du service de rapport (Report)
+        $this->app->bind(
+            \App\Services\Interfaces\ReportServiceInterface::class,
+            \App\Services\ReportService::class);
     }
 
     /**
