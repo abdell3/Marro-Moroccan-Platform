@@ -29,6 +29,7 @@ class UpdatePostRequest extends FormRequest
             'typeContenu' => 'nullable|string',
             'community_id' => 'required|exists:communities,id',
             'media' => 'nullable|file|max:5120', 
+            'tags' => 'nullable|string',
         ];
     }
 
@@ -40,6 +41,7 @@ class UpdatePostRequest extends FormRequest
             'community_id.required' => 'La communauté est obligatoire',
             'community_id.exists' => 'Cette communauté n\'existe pas',
             'media.max' => 'Le fichier est trop volumineux (max 5 Mo)',
+            'tags.string' => 'Le format des tags est invalide',
         ];
     }
 }

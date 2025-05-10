@@ -1,6 +1,6 @@
 <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-4">
     <div class="flex justify-between items-start mb-4">
-        <h3 class="text-lg font-medium text-gray-900 dark:text-white">Sondage</h3>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ isset($post) && $post->contenu ? $post->contenu : 'Sondage' }}</h3>
         <div class="text-sm text-gray-500 dark:text-gray-400">
             {{ $poll->created_at->diffForHumans() }}
         </div>
@@ -9,31 +9,54 @@
     @php
         $results = app(App\Services\Interfaces\PollServiceInterface::class)->getPollResults($poll->id);
         $userVote = Auth::check() ? app(App\Services\Interfaces\PollServiceInterface::class)->getUserVote($poll->id, Auth::id()) : null;
+        $options = $poll->options()->orderBy('position')->get();
     @endphp
     
     @if($userVote !== null)
         <div class="space-y-3 mb-4">
-            @foreach($results['results'] as $value => $data)
-                <div>
-                    <div class="flex justify-between mb-1">
-                        <div class="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            @if($poll->typeVote === 'etoiles')
-                                {{ $value }} étoile{{ $value > 1 ? 's' : '' }}
-                            @elseif($poll->typeVote === 'pouces')
-                                {{ $value == 1 ? 'Pouce en haut' : 'Pouce en bas' }}
-                            @else
-                                Option {{ $value }}
-                            @endif
+            @if($poll->typeVote === 'standard' && $options->count() > 0)
+                @foreach($options as $option)
+                    @php
+                        $optionId = $option->id;
+                        $voteData = $results['results'][$optionId] ?? ['count' => 0, 'percentage' => 0];
+                    @endphp
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <div class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                {{ $option->text }}
+                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                {{ $voteData['percentage'] }}%
+                            </div>
                         </div>
-                        <div class="text-sm text-gray-500 dark:text-gray-400">
-                            {{ $data['percentage'] }}%
+                        <div class="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+                            <div class="bg-red-600 h-2 rounded-full" style="width: {{ $voteData['percentage'] }}%"></div>
                         </div>
                     </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
-                        <div class="bg-red-600 h-2 rounded-full" style="width: {{ $data['percentage'] }}%"></div>
+                @endforeach
+            @else
+                @foreach($results['results'] as $value => $data)
+                    <div>
+                        <div class="flex justify-between mb-1">
+                            <div class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                @if($poll->typeVote === 'etoiles')
+                                    {{ $value }} étoile{{ $value > 1 ? 's' : '' }}
+                                @elseif($poll->typeVote === 'pouces')
+                                    {{ $value == 1 ? 'Pouce en haut' : 'Pouce en bas' }}
+                                @else
+                                    Option {{ $value }}
+                                @endif
+                            </div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">
+                                {{ $data['percentage'] }}%
+                            </div>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700">
+                            <div class="bg-red-600 h-2 rounded-full" style="width: {{ $data['percentage'] }}%"></div>
+                        </div>
                     </div>
-                </div>
-            @endforeach
+                @endforeach
+            @endif
         </div>
         
         <div class="flex justify-between items-center">
@@ -43,6 +66,11 @@
                     {{ $userVote }} étoile{{ $userVote > 1 ? 's' : '' }}
                 @elseif($poll->typeVote === 'pouces')
                     {{ $userVote == 1 ? 'Pouce en haut 👍' : 'Pouce en bas 👎' }}
+                @elseif($poll->typeVote === 'standard' && $options->count() > 0)
+                    @php
+                        $votedOption = $options->firstWhere('id', $userVote);
+                    @endphp
+                    {{ $votedOption ? $votedOption->text : 'Option inconnue' }}
                 @else
                     Option {{ $userVote }}
                 @endif
@@ -71,6 +99,23 @@
                         </button>
                         <button type="submit" name="vote_value" value="0" class="text-3xl focus:outline-none hover:text-red-500 transition {{ $userVote == 0 ? 'text-red-500' : '' }}">
                             👎
+                        </button>
+                    </div>
+                @elseif($poll->typeVote === 'standard' && $options->count() > 0)
+                    <div class="space-y-2">
+                        @foreach($options as $option)
+                            <div class="flex items-center">
+                                <input type="radio" id="poll-{{ $poll->id }}-option-{{ $option->id }}" name="vote_value" value="{{ $option->id }}" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded" {{ $userVote == $option->id ? 'checked' : '' }}>
+                                <label for="poll-{{ $poll->id }}-option-{{ $option->id }}" class="ml-2 block text-sm text-gray-900 dark:text-white">
+                                    {{ $option->text }}
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                    
+                    <div class="flex justify-end">
+                        <button type="submit" class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            Voter
                         </button>
                     </div>
                 @else
@@ -119,6 +164,23 @@
                         </button>
                         <button type="submit" name="vote_value" value="0" class="text-3xl focus:outline-none hover:text-red-500 transition">
                             👎
+                        </button>
+                    </div>
+                @elseif($poll->typeVote === 'standard' && $options->count() > 0)
+                    <div class="space-y-2">
+                        @foreach($options as $option)
+                            <div class="flex items-center">
+                                <input type="radio" id="poll-{{ $poll->id }}-option-{{ $option->id }}" name="vote_value" value="{{ $option->id }}" class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded">
+                                <label for="poll-{{ $poll->id }}-option-{{ $option->id }}" class="ml-2 block text-sm text-gray-900 dark:text-white">
+                                    {{ $option->text }}
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                    
+                    <div class="flex justify-end">
+                        <button type="submit" class="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            Voter
                         </button>
                     </div>
                 @else

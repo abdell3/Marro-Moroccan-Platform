@@ -70,9 +70,25 @@ class Post extends Model
         return $this->belongsToMany(Tag::class, 'post_tag');
     }
 
-
+    
     public function reports()
     {
         return $this->morphMany(Report::class, 'reportable');
+    }
+    
+    public function votes()
+    {
+        return $this->hasMany(PostVote::class);
+    }
+    
+    public function hasVoted($userId)
+    {
+        return $this->votes()->where('user_id', $userId)->exists();
+    }
+    
+    public function getUserVoteType($userId)
+    {
+        $vote = $this->votes()->where('user_id', $userId)->first();
+        return $vote ? $vote->vote_type : null;
     }
 }

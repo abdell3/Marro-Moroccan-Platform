@@ -13,24 +13,19 @@ use App\Http\Controllers\TagController;
 use App\Http\Controllers\ThreadController;
 use Illuminate\Support\Facades\Route;
 
-
-
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 
 require __DIR__.'/auth.php';
 
 
-// Route explicite pour la création de posts avec le middleware create_post personnalisé
 Route::middleware('create_post')->get('/create-new-post', [PostController::class, 'create'])->name('posts.create.direct');
 
 
 Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
 
-// Route spécifique qui doit être déclarée avant la route avec paramètre dynamique
 Route::middleware('auth')->get('/posts/create', [PostController::class, 'create'])->name('posts.create');
 
-// Route avec paramètre dynamique - doit être après les routes spécifiques
 Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
 
 Route::get('/communities', [CommunityController::class, 'index'])->name('communities.index');
@@ -71,6 +66,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/posts/{post}/edit', [PostController::class, 'edit'])->name('posts.edit');
     Route::put('/posts/{post}', [PostController::class, 'update'])->name('posts.update');
     Route::delete('/posts/{post}', [PostController::class, 'destroy'])->name('posts.destroy');
+    Route::post('/posts/{post}/upvote', [PostController::class, 'upvote'])->name('posts.upvote');
+    Route::post('/posts/{post}/downvote', [PostController::class, 'downvote'])->name('posts.downvote');
     Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('posts.like');
     Route::post('/posts/{post}/save', [PostController::class, 'save'])->name('posts.save');
     Route::delete('/posts/{post}/unsave', [PostController::class, 'unsave'])->name('posts.unsave');
@@ -111,18 +108,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/comments/{comment}/reply', [CommentController::class, 'reply'])->name('comments.reply');
     Route::get('/posts/{post}/comments', [CommentController::class, 'byPost'])->name('comments.by_post');
 
-
-
-
-
-
-
-
-
-
-
-
-
 });
 
 
@@ -139,9 +124,6 @@ Route::middleware(['auth', 'check.permission:edit_tags'])->group(function () {
 Route::middleware(['auth', 'check.permission:delete_tags'])->group(function () {
     Route::delete('/tags/{tag}', [TagController::class, 'destroy'])->name('tags.destroy');
 });
-
-
-
 
 
 

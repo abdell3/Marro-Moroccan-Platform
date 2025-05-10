@@ -87,13 +87,16 @@ class TagService implements TagServiceInterface
         if (is_string($tagTitles)) {
             $tagTitles = explode(',', $tagTitles);
         }
+        
         foreach ($tagTitles as $title) {
             $title = trim($title);
             if (empty($title)) {
                 continue;
             }
-            $tag = $this->getOrCreateTagByTitle($title);
-            $tagIds[] = $tag->id;
+            if ($this->tagRepository->tagExistsByTitle($title)) {
+                $tag = $this->tagRepository->getTagByTitle($title);
+                $tagIds[] = $tag->id;
+            }
         }
         $post = Post::find($postId);
         $post->tags()->sync($tagIds);

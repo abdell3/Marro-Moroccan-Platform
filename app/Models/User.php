@@ -70,7 +70,6 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
-    
 
     public function badges()
     {
@@ -90,12 +89,10 @@ class User extends Authenticatable
     }
 
 
-
     public function comments()
     {
         return $this->hasMany(Comment::class, 'auteur_id');
     }
-
 
 
     public function polls()
@@ -109,10 +106,12 @@ class User extends Authenticatable
         return $this->hasMany(Report::class, 'user_id');
     }
 
+
     public function savedPosts()
     {
         return $this->belongsToMany(Post::class, 'save_posts');
     }
+
 
     public function threads()
     {
@@ -154,5 +153,10 @@ class User extends Authenticatable
         return $this->belongsToMany(User::class, 'poll_user', 'poll_id', 'user_id')
                     ->withPivot('vote_value')
                     ->withTimestamps();
+    }
+    
+    public function postVotes()
+    {
+        return $this->hasMany(PostVote::class);
     }
 }

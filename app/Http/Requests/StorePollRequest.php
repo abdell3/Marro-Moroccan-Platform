@@ -11,7 +11,7 @@ class StorePollRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return auth()->check();
+        return true;
     }
 
     /**
@@ -21,21 +21,32 @@ class StorePollRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
+        $rules = [
             'post_id' => 'required|exists:posts,id',
-            'auteur_id' => 'sometimes|exists:users,id',
-            'typeVote' => 'required|string|in:standard,etoiles,pouces',
+            'typeVote' => 'required|in:standard,etoiles,pouces',
+            'auteur_id' => 'nullable|exists:users,id',
+            'question' => 'required|string|max:255',
         ];
+        if ($this->input('typeVote') === 'standard') {
+            $rules['poll_options'] = 'required|array|min:2';
+            $rules['poll_options.*'] = 'required|string|max:255';
+        }
+
+        return $rules;
     }
 
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array
+     */
     public function messages(): array
     {
         return [
-            'post_id.required' => 'Le post est requis',
-            'post_id.exists' => 'Le post sélectionné n\'existe pas',
-            'auteur_id.exists' => 'L\'auteur sélectionné n\'existe pas',
-            'typeVote.required' => 'Le type de vote est requis',
-            'typeVote.in' => 'Le type de vote doit être standard, etoiles ou pouces',
+            'poll_options.required' => 'Vous devez spécifier au moins deux options pour le sondage.',
+            'poll_options.min' => 'Le sondage doit avoir au moins :min options.',
+            'poll_options.*.required' => 'Le texte de chaque option est obligatoire.',
+            'question.required' => 'La question du sondage est obligatoire.',
         ];
     }
 }

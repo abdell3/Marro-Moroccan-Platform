@@ -21,7 +21,7 @@
                     </div>
 
                     @forelse($posts as $post)
-                        @include('posts.partials.post-card', ['post' => $post])
+                        @include('posts.partials.post-card-with-vote', ['post' => $post])
                     @empty
                         <div class="text-center py-8">
                             <p class="text-gray-500 dark:text-gray-400">Aucun post trouvé.</p>

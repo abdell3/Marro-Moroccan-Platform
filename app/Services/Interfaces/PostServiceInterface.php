@@ -18,6 +18,8 @@ interface PostServiceInterface
     public function sauvegarderPost($postId, $userId);
     public function enleverPostSauvegarde($postId, $userId);
     public function likePost($postId);
+    public function upvotePost($postId);
+    public function downvotePost($postId);
     public function ajouterTag($postId, $tagId);
     public function enleverTag($postId, $tagId);
 }

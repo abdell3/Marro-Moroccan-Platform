@@ -25,6 +25,10 @@ interface PostRepositoryInterface extends BaseRepositoryInterface
     public function isPostSauvegarde($postId, $userId);
     
     public function ajouterLike($postId);
+
+    public function upvotePost($postId);
+    
+    public function downvotePost($postId);
     
     public function ajouterTag($postId, $tagId);
     

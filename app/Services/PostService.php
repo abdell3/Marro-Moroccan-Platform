@@ -114,6 +114,16 @@ class PostService implements PostServiceInterface
         return $this->postRepository->ajouterLike($postId);
     }
     
+    public function upvotePost($postId)
+    {
+        return $this->postRepository->upvotePost($postId);
+    }
+    
+    public function downvotePost($postId)
+    {
+        return $this->postRepository->downvotePost($postId);
+    }
+    
     public function ajouterTag($postId, $tagId)
     {
         return $this->postRepository->ajouterTag($postId, $tagId);
