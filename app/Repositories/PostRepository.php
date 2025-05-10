@@ -93,6 +93,50 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
         $post->increment('like');
         return $post;
     }
+    
+    public function upvotePost($postId)
+    {
+        $post = $this->find($postId);
+        $userId = auth()->id();
+        $vote = $post->votes()->where('user_id', $userId)->first();
+        
+        if (!$vote) {
+            $post->votes()->create([
+                'user_id' => $userId,
+                'vote_type' => 'upvote'
+            ]);
+            $post->increment('like');
+        } elseif ($vote->vote_type == 'upvote') {
+            $vote->delete();
+            $post->decrement('like');
+        } else {
+            $vote->update(['vote_type' => 'upvote']);
+            $post->increment('like', 2);
+        }
+        return $post;
+    }
+    
+    public function downvotePost($postId)
+    {
+        $post = $this->find($postId);
+        $userId = auth()->id();
+        $vote = $post->votes()->where('user_id', $userId)->first();
+        
+        if (!$vote) {
+            $post->votes()->create([
+                'user_id' => $userId,
+                'vote_type' => 'downvote'
+            ]);
+            $post->decrement('like');
+        } elseif ($vote->vote_type == 'downvote') {
+            $vote->delete();
+            $post->increment('like');
+        } else {
+            $vote->update(['vote_type' => 'downvote']);
+            $post->decrement('like', 2);
+        }
+        return $post;
+    }
 
     public function ajouterTag($postId, $tagId)
     {

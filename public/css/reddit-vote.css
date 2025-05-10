@@ -1,0 +1,112 @@
+/* Styles pour les boutons de vote style Reddit */
+
+.vote-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-right: 8px;
+    min-width: 40px;
+}
+
+.vote-button {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    opacity: 1;
+    transition: all 0.1s ease;
+}
+
+.vote-button:hover {
+    opacity: 0.8;
+}
+
+.vote-button:focus {
+    outline: none;
+}
+
+.vote-count {
+    font-size: 14px;
+    font-weight: bold;
+    margin: 4px 0;
+    text-align: center;
+    color: #1A1A1B;
+}
+
+.upvote-button {
+    color: #9c9c9c;
+}
+
+.downvote-button {
+    color: #9c9c9c;
+}
+
+.upvote-button.upvoted {
+    color: #FF4500;
+}
+
+.downvote-button.downvoted {
+    color: #7193FF;
+}
+
+.vote-count.upvoted {
+    color: #FF4500;
+}
+
+.vote-count.downvoted {
+    color: #7193FF;
+}
+
+.upvote-icon {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+    stroke: currentColor;
+}
+
+.downvote-icon {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+    stroke: currentColor;
+}
+
+/* Mode sombre */
+.dark .vote-count {
+    color: #D7DADC;
+}
+
+.dark .upvote-button,
+.dark .downvote-button {
+    color: #818384;
+}
+
+.dark .upvote-button.upvoted {
+    color: #FF4500;
+}
+
+.dark .downvote-button.downvoted {
+    color: #7193FF;
+}
+
+.dark .vote-count.upvoted {
+    color: #FF4500;
+}
+
+.dark .vote-count.downvoted {
+    color: #7193FF;
+}
+
+/* Animation au clic */
+.vote-button:active {
+    transform: scale(1.2);
+}
+
+.hidden {
+    display: none !important;
+}

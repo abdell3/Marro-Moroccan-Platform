@@ -15,8 +15,9 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="{{ asset('css/reddit-vote.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/custom-components.css') }}">
 
-    
     @stack('styles')
 </head>
 <body class="font-sans antialiased h-full bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
@@ -245,6 +246,7 @@
     </div>
 
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script src="{{ asset('js/reddit-vote.js') }}"></script>
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {

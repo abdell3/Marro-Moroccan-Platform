@@ -81,12 +81,9 @@ class TagController extends Controller
     public function search(Request $request)
     {
         $keyword = $request->input('q');
-        
-        // Recherche simple - dans un vrai projet, créer une méthode dans le repository
         $tags = Tag::where('title', 'like', "%{$keyword}%")
                    ->orWhere('description', 'like', "%{$keyword}%")
                    ->get();
-        
         return view('tags.search', compact('tags', 'keyword'));
     }
 }

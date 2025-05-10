@@ -1,10 +1,8 @@
 <x-layouts.app :title="$post->titre . ' | Marro'">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Colonne principale -->
         <div class="md:col-span-2">
             <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden mb-6">
                 <div class="p-6">
-                    <!-- Navigation de retour -->
                     <div class="mb-4">
                         <a href="{{ route('posts.index') }}" class="inline-flex items-center text-sm text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-500">
                             <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -14,10 +12,9 @@
                         </a>
                     </div>
 
-                    <!-- En-tête du post -->
                     <div class="flex items-center mb-4">
                         <div class="flex-shrink-0">
-                            <img class="h-10 w-10 rounded-full" src="{{ asset($post->auteur->avatar ?? 'avatars/default.png') }}" alt="{{ $post->auteur->nom ?? 'Auteur' }}">
+                            <img class="h-10 w-10 rounded-full" src="{{ asset('storage/' . ($post->auteur->avatar ?? 'avatars/default-avatar.png')) }}" alt="{{ $post->auteur->nom ?? 'Auteur' }}">
                         </div>
                         <div class="ml-3">
                             <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $post->auteur->nom }} {{ $post->auteur->prenom }}</div>
@@ -27,15 +24,12 @@
                         </div>
                     </div>
 
-                    <!-- Titre du post -->
                     <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">{{ $post->titre }}</h1>
 
-                    <!-- Contenu du post -->
                     <div class="prose dark:prose-invert max-w-none mb-6">
                         <p>{{ $post->contenu }}</p>
                     </div>
 
-                    <!-- Média -->
                     @if($post->media_path)
                         <div class="mt-4 mb-6">
                             @if($post->typeContenu === 'image')
@@ -49,7 +43,6 @@
                         </div>
                     @endif
 
-                    <!-- Tags -->
                     @if($post->tags && $post->tags->count() > 0)
                         <div class="mt-4 flex flex-wrap gap-2">
                             @foreach($post->tags as $tag)
@@ -60,21 +53,13 @@
                         </div>
                     @endif
 
-                    <!-- Actions -->
                     <div class="mt-6 flex items-center justify-between">
                         <div class="flex items-center space-x-4">
-                            <!-- Like button -->
-                            <form action="{{ route('posts.like', $post) }}" method="POST">
-                                @csrf
-                                <button type="submit" class="flex items-center text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-500">
-                                    <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"></path>
-                                    </svg>
-                                    <span>{{ $post->like }}</span>
-                                </button>
-                            </form>
+                            @php
+                                $userVoteType = Auth::check() ? $post->getUserVoteType(Auth::id()) : null;
+                            @endphp
+                            @include('posts.partials.reddit-vote', ['post' => $post, 'userVoteType' => $userVoteType])
 
-                            <!-- Comment count -->
                             <a href="#comments" class="flex items-center text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-500">
                                 <svg class="h-5 w-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
@@ -82,7 +67,6 @@
                                 <span>{{ $post->comments->count() }}</span>
                             </a>
 
-                            <!-- Save/unsave button -->
                             @auth
                                 @if(Auth::user()->savedPosts->contains($post->id))
                                     <form action="{{ route('posts.unsave', $post) }}" method="POST">
@@ -109,7 +93,6 @@
                             @endauth
                         </div>
 
-                        <!-- Edit/Delete buttons -->
                         @can('update', $post)
                             <div class="flex space-x-2">
                                 <a href="{{ route('posts.edit', $post) }}" class="inline-flex items-center px-3 py-1 border border-gray-300 bg-white text-sm font-medium rounded-md text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600 dark:hover:bg-gray-600">
@@ -134,7 +117,6 @@
                     </div>
                 </div>
 
-                <!-- Sondages associés au post -->
                 @if($post->polls && $post->polls->count() > 0)
                     <div class="border-t border-gray-200 dark:border-gray-700 px-6 py-4">
                         <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Sondages</h2>
@@ -144,11 +126,9 @@
                     </div>
                 @endif
 
-                <!-- Section des commentaires -->
                 <div id="comments" class="border-t border-gray-200 dark:border-gray-700 px-6 py-4">
                     <h2 class="text-lg font-bold text-gray-900 dark:text-white mb-4">Commentaires ({{ $post->comments->count() }})</h2>
 
-                    <!-- Formulaire de commentaire -->
                     @auth
                         <form action="{{ route('comments.store') }}" method="POST" class="mb-6">
                             @csrf
@@ -171,7 +151,6 @@
                         </div>
                     @endauth
 
-                    <!-- Liste des commentaires -->
                     <div class="space-y-6">
                         @forelse($post->comments->where('parent_id', null) as $comment)
                             @include('comments.partials.comment-card', ['comment' => $comment])
@@ -183,9 +162,7 @@
             </div>
         </div>
 
-        <!-- Barre latérale -->
         <div>
-            <!-- Info sur la communauté -->
             <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden mb-6">
                 <div class="p-6">
                     <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">À propos de la communauté</h2>
@@ -225,7 +202,6 @@
                 </div>
             </div>
 
-            <!-- Posts similaires -->
             <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
                 <div class="p-6">
                     <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Posts similaires</h2>
@@ -245,4 +221,5 @@
             </div>
         </div>
     </div>
+    <script src="{{ asset('js/vote.js') }}"></script>
 </x-layouts.app>

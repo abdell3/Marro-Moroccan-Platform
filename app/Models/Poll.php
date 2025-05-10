@@ -39,5 +39,10 @@ class Poll extends Model
                     ->withTimestamps();
     }
 
+    public function options()
+    {
+        return $this->hasMany(PollOption::class)->orderBy('position');
+    }
+
 
 }
