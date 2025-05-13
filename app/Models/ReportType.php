@@ -8,7 +8,6 @@ use App\Models\Report;
 
 class ReportType extends Model
 {
-    /** @use HasFactory<\Database\Factories\ReportTypeFactory> */
     use HasFactory;
 
     protected $fillable = [

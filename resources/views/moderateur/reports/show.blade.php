@@ -1,7 +1,7 @@
 <x-layouts.app :title="'Détails du signalement | Marro'">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="mb-6">
-            <a href="{{ route('moderator.reports.index') }}" class="inline-flex items-center text-sm text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400">
+            <a href="{{ route('moderateur.reports.index') }}" class="inline-flex items-center text-sm text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400">
                 <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
@@ -172,7 +172,7 @@
                         </h2>
                     </div>
                     <div class="p-6">
-                        <form action="{{ route('moderator.reports.handle', $report) }}" method="POST">
+                        <form action="{{ route('moderateur.reports.handle', $report) }}" method="POST">
                             @csrf
                             <div class="mb-4">
                                 <label for="action_taken" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Action à prendre</label>

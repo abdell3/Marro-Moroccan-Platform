@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Requests\StoreReportTypeRequest;
+use App\Http\Requests\UpdateReportTypeRequest;
 use ILLuminate\Routing\Controller;
 use App\Models\ReportType;
 use App\Services\Interfaces\ReportTypeServiceInterface;
@@ -29,12 +31,9 @@ class ReportTypeController extends Controller
         return view('admin.report-types.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreReportTypeRequest $request)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255|unique:report_types',
-            'description' => 'nullable|string',
-        ]);
+        $validatedData = $request->validated();
 
         $reportType = $this->reportTypeService->createReportType($validatedData);
         return redirect()->route('admin.report-types.index')
@@ -51,12 +50,9 @@ class ReportTypeController extends Controller
         return view('admin.report-types.edit', compact('reportType'));
     }
 
-    public function update(Request $request, ReportType $reportType)
+    public function update(UpdateReportTypeRequest $request, ReportType $reportType)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255|unique:report_types,name,' . $reportType->id,
-            'description' => 'nullable|string',
-        ]);
+        $validatedData = $request->validated($reportType);
 
         $this->reportTypeService->updateReportType($reportType->id, $validatedData);
         return redirect()->route('admin.report-types.index')

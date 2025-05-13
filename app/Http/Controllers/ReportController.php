@@ -25,9 +25,6 @@ class ReportController extends Controller
         $this->middleware('auth');
     }
 
-    /**
-     * Show the form for creating a new report for a post.
-     */
     public function createForPost(Post $post)
     {
         $reportTypes = $this->reportTypeService->getAllReportTypes();
@@ -38,9 +35,6 @@ class ReportController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new report for a comment.
-     */
     public function createForComment(Comment $comment)
     {
         $reportTypes = $this->reportTypeService->getAllReportTypes();
@@ -51,9 +45,6 @@ class ReportController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new report for a community.
-     */
     public function createForCommunity(Community $community)
     {
         $reportTypes = $this->reportTypeService->getAllReportTypes();
@@ -64,9 +55,6 @@ class ReportController extends Controller
         ]);
     }
 
-    /**
-     * Store a newly created report in storage.
-     */
     public function store(Request $request)
     {
         $validatedData = $request->validate([
@@ -84,9 +72,6 @@ class ReportController extends Controller
         return redirect()->back()->with('success', 'Votre signalement a été enregistré. Merci pour votre contribution à la communauté.');
     }
 
-    /**
-     * Handle AJAX report submission.
-     */
     public function ajaxReport(Request $request)
     {
         $validatedData = $request->validate([

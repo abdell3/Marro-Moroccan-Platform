@@ -69,6 +69,7 @@
                                 @endif
                                 @if(auth()->user()->hasRole('Moderateur'))
                                     <a href="{{ route('moderator.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Modération</a>
+                                    <a href="{{ route('moderator.profile.show') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profil modérateur</a>
                                 @endif
                             @endif
                             
@@ -134,6 +135,7 @@
                         @endif
                         @if(auth()->user()->hasRole('Moderateur'))
                             <a href="{{ route('moderator.dashboard') }}" class="block px-4 py-2 text-base font-medium text-gray-700 hover:text-white hover:bg-red-600">Modération</a>
+                            <a href="{{ route('moderator.profile.show') }}" class="block px-4 py-2 text-base font-medium text-gray-700 hover:text-white hover:bg-red-600">Profil modérateur</a>
                         @endif
                     @endif
                     

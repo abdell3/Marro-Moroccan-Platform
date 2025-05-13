@@ -9,7 +9,6 @@ use App\Models\Permission;
 
 class Role extends Model
 {
-    /** @use HasFactory<\Database\Factories\RoleFactory> */
     use HasFactory;
 
 

@@ -29,6 +29,9 @@ class CommunityController extends Controller
 
     public function create()
     {
+        if (request()->is('moderator/*')) {
+            return view('communities.create', ['isModeratorContext' => true]);
+        }
         return view('communities.create');
     }
 
@@ -37,6 +40,12 @@ class CommunityController extends Controller
         $data = $request->validated();
         $community = $this->communityService->createCommunity($data);
         $this->communityService->followCommunity(Auth::id(), $community->id);
+        if (request()->is('moderator/*')) {
+            return redirect()
+                ->route('moderator.communities.show', $community->id)
+                ->with('success', 'La communauté a été créée avec succès!');
+        }
+        
         return redirect()
             ->route('communities.show', $community->id)
             ->with('success', 'La communauté a été créée avec succès!');
@@ -44,6 +53,10 @@ class CommunityController extends Controller
     
     public function show(Community $community)
     {
+        if (request()->is('moderator/communities/*') && !request()->routeIs('moderator.community.*')) {
+            return view('moderateur.communities.show', compact('community'));
+        }
+
         $posts = $this->communityService->getPosts($community->id, 10);
         $threads = $this->communityService->getThreads($community->id, 10);
         $isFollowing = Auth::check() ? $this->communityService->userFollowsCommunity(Auth::id(), $community->id) : false;
@@ -53,6 +66,10 @@ class CommunityController extends Controller
 
     public function edit(Community $community)
     {
+        if (request()->is('moderator/*')) {
+            return view('communities.edit', compact('community'));
+        }
+        
         if (Auth::id() != $community->creator_id) {
             return redirect()->route('communities.show', $community->id)
                 ->with('error', 'Vous n\'êtes pas autorisé à modifier cette communauté.');
@@ -64,6 +81,10 @@ class CommunityController extends Controller
     {
         $data = $request->validated();
         $this->communityService->updateCommunity($community->id, $data);
+        if (request()->is('moderator/*')) {
+            return redirect()->route('moderator.communities.show', $community->id)
+                ->with('success', 'La communauté a été mise à jour avec succès!');
+        }
         return redirect()->route('communities.show', $community->id)
             ->with('success', 'La communauté a été mise à jour avec succès!');
     }

@@ -11,7 +11,7 @@ class UpdateReportTypeRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -19,10 +19,11 @@ class UpdateReportTypeRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
-    public function rules(): array
+    public function rules($reportType): array
     {
         return [
-            //
+            'name' => 'required|string|max:255|unique:report_types,name,' . $reportType->id,
+            'description' => 'nullable|string',
         ];
     }
 }

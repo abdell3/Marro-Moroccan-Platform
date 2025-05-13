@@ -32,6 +32,14 @@ class CommunityRepository extends BaseRepository implements CommunityRepositoryI
         })->get();
     }
     
+    public function getCommunitiesCreatedByUserWithCounts($userId)
+    {
+        return $this->model
+            ->where('creator_id', $userId)
+            ->withCount(['followers', 'posts'])
+            ->get();
+    }
+    
     public function userFollowsCommunity($userId, $communityId)
     {
         $community = $this->find($communityId);
@@ -71,5 +79,13 @@ class CommunityRepository extends BaseRepository implements CommunityRepositoryI
     {
         $community = $this->find($communityId);
         return $community->threads()->with('user')->orderBy('created_at', 'desc')->paginate($paginate);
+    }
+    
+    public function getMostActiveCommunities($limit = 5)
+    {
+        return $this->model->withCount(['posts', 'followers as members_count'])
+            ->orderBy('posts_count', 'desc')
+            ->limit($limit)
+            ->get();
     }
 }

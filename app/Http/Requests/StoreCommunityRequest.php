@@ -26,6 +26,7 @@ class StoreCommunityRequest extends FormRequest
             'description' => 'nullable|string|max:1000',
             'rules' => 'nullable|string|max:2000',
             'icon_file' => 'nullable|image|max:2048',
+            'creator_id' => 'required|exists:users,id',
         ];
     }
 

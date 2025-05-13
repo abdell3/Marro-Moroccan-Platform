@@ -50,10 +50,7 @@ class ReportController extends Controller
 
     public function handle(Request $request, Report $report)
     {
-        $validatedData = $request->validate([
-            'action_taken' => 'required|string|in:ignored,content_removed,user_banned,other',
-            'admin_notes' => 'nullable|string',
-        ]);
+        $validatedData = $request->validated();
         $this->reportService->handleReport(
             $report->id,
             Auth::id(),

@@ -1,13 +1,11 @@
-<x-layouts.admin :title="'Gestion des signalements | Admin'">
+<x-layouts.app :title="'Gestion des signalements | Admin'">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="mb-6">
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Gestion des signalements</h1>
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Gérez les signalements de contenu inapproprié</p>
         </div>
 
-        <!-- Filtres et statistiques -->
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
-            <!-- Filtres -->
             <div class="lg:col-span-3 bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                 <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Filtres</h2>
                 <div class="flex flex-wrap gap-4">
@@ -34,7 +32,6 @@
                 </div>
             </div>
 
-            <!-- Statistiques -->
             <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
                 <h2 class="text-lg font-medium text-gray-900 dark:text-white mb-4">Statistiques</h2>
                 <div class="space-y-4">
@@ -74,7 +71,6 @@
             </div>
         </div>
 
-        <!-- Liste des signalements -->
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
             <div class="px-4 py-5 sm:px-6 border-b border-gray-200 dark:border-gray-700">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">

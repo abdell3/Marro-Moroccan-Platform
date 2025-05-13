@@ -23,4 +23,5 @@ interface PostServiceInterface
     public function downvotePost($postId);
     public function ajouterTag($postId, $tagId);
     public function enleverTag($postId, $tagId);
+    public function getPostsWithAuteur($communityId, $perPage = 10);
 }

@@ -14,7 +14,6 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
 
     public function getDerniersPostsPagines($perPage = 15)
     {
-        // Filtrons les posts avec des eager loading pour les relations
         return $this->model->with(['auteur', 'community', 'tags', 'votes', 'comments', 'savedBy'])
             ->orderBy('created_at', 'desc')
             ->paginate($perPage);
@@ -149,7 +148,6 @@ class PostRepository extends BaseRepository implements PostRepositoryInterface
     public function ajouterTag($postId, $tagId)
     {
         $post = $this->find($postId);
-        
         if ($post->tags()->where('tag_id', $tagId)->exists()) {
             return true;
         }

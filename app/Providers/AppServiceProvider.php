@@ -20,10 +20,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Utiliser notre vue de pagination personnalisée
         Paginator::defaultView('pagination.simple');
-        
-        // Ou utiliser Bootstrap (décommenté pour utiliser Bootstrap)
-        // Paginator::useBootstrap();
     }
 }

@@ -1,5 +1,4 @@
 <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 mb-4" id="comment-{{ $comment->id }}">
-    <!-- En-tête du commentaire -->
     <div class="flex items-start">
         <div class="flex-shrink-0">
             <img class="h-9 w-9 rounded-full" src="{{ asset('storage/' . ($comment->auteur->avatar ?? 'avatars/default.png')) }}" alt="{{ $comment->auteur->nom ?? 'Utilisateur' }}">
@@ -11,7 +10,6 @@
                     <span class="text-xs text-gray-500 dark:text-gray-400 ml-2">{{ $comment->created_at->diffForHumans() }}</span>
                 </div>
                 
-                <!-- Actions (modifier/supprimer) -->
                 @can('update', $comment)
                     <div class="flex space-x-2">
                         <a href="{{ route('comments.edit', $comment) }}" class="text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-500">
@@ -32,12 +30,10 @@
                 @endcan
             </div>
             
-            <!-- Contenu du commentaire -->
             <div class="mt-2 text-sm text-gray-700 dark:text-gray-300">
                 <p>{{ $comment->contenu }}</p>
             </div>
             
-            <!-- Actions (répondre) -->
             <div class="mt-3 flex items-center space-x-4">
                 <button onclick="toggleReplyForm('{{ $comment->id }}')" class="text-xs text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-500">
                     Répondre
@@ -52,7 +48,6 @@
                 @endauth
             </div>
             
-            <!-- Formulaire de réponse (caché par défaut) -->
             @auth
                 <div id="reply-form-{{ $comment->id }}" class="mt-3" style="display: none;">
                     <form action="{{ route('comments.reply', $comment) }}" method="POST">
@@ -77,7 +72,6 @@
                 </div>
             @endauth
             
-            <!-- Réponses -->
             @if(isset($comment->replies) && $comment->replies->count() > 0)
                 <div class="mt-4 ml-6 space-y-4">
                     @foreach($comment->replies as $reply)
@@ -93,7 +87,6 @@
                                             <span class="text-xs text-gray-500 dark:text-gray-400 ml-2">{{ $reply->created_at->diffForHumans() }}</span>
                                         </div>
                                         
-                                        <!-- Actions (modifier/supprimer) -->
                                         @can('update', $reply)
                                             <div class="flex space-x-2">
                                                 <a href="{{ route('comments.edit', $reply) }}" class="text-gray-500 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-500">
@@ -114,7 +107,6 @@
                                         @endcan
                                     </div>
                                     
-                                    <!-- Contenu de la réponse -->
                                     <div class="mt-2 text-sm text-gray-700 dark:text-gray-300">
                                         <p>{{ $reply->contenu }}</p>
                                     </div>

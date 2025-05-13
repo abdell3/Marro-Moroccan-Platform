@@ -77,8 +77,6 @@ class PollService implements PollServiceInterface
     public function vote($pollId, $voteValue, $userId = null)
     {
         $userId = $userId ?? Auth::id();
-        
-        // Pour le type standard, vérifier que l'option existe
         $poll = $this->pollRepository->find($pollId);
         if (!$poll) {
             return false;
@@ -96,7 +94,6 @@ class PollService implements PollServiceInterface
                 return false;
             }
         }
-        
         return $this->pollRepository->vote($pollId, $userId, $voteValue);
     }
 
@@ -118,7 +115,6 @@ class PollService implements PollServiceInterface
     public function getPollResults($pollId)
     {
         $poll = $this->pollRepository->find($pollId);
-        
         if (!$poll) {
             return null;
         }
@@ -145,7 +141,6 @@ class PollService implements PollServiceInterface
                 ];
             }
         }
-        
         return [
             'poll' => $poll,
             'results' => $results,

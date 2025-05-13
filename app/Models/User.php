@@ -20,41 +20,25 @@ use App\Models\SavePost;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+  
     protected $fillable = [
         'nom',
         'prenom',
         'email',
         'password',
         'role_id',
-        'badge_id',
         'token',
         'avatar',
         'preferences'
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -73,7 +57,8 @@ class User extends Authenticatable
 
     public function badges()
     {
-        return $this->belongsToMany(Badge::class);
+        return $this->belongsToMany(Badge::class, 'badge_user')
+                    ->withPivot('earned_at');
     }
 
 
@@ -126,31 +111,11 @@ class User extends Authenticatable
 
     public function hasRole(string $roleName)
     {
-        // Forcer le chargement de la relation rôle si elle n'est pas déjà chargée
         if (!$this->relationLoaded('role')) {
             $this->load('role');
         }
         
-        // Vérifier si le rôle existe et si son nom correspond, en ignorant la casse
-        if (!$this->role) {
-            \Illuminate\Support\Facades\Log::warning('Utilisateur sans rôle', [
-                'user_id' => $this->id, 
-                'email' => $this->email,
-                'role_id' => $this->role_id
-            ]);
-            return false;
-        }
-        
         $hasRole = strtolower($this->role->role_name) === strtolower($roleName);
-        \Illuminate\Support\Facades\Log::info('Vérification du rôle', [
-            'user_id' => $this->id,
-            'email' => $this->email,
-            'role_id' => $this->role_id,
-            'user_role' => $this->role->role_name,
-            'requested_role' => $roleName,
-            'match' => $hasRole ? 'oui' : 'non'
-        ]);
-        
         return $hasRole;
     }
 
@@ -165,7 +130,6 @@ class User extends Authenticatable
                 return true;
             }
         }
-        
         return false;
     }
 

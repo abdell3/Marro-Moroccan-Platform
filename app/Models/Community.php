@@ -28,6 +28,11 @@ class Community extends Model
         return $this->belongsToMany(User::class, 'user_community');
     }
 
+    public function members()
+    {
+        return $this->followers();
+    }
+
 
     public function creator()
     {
@@ -44,5 +49,26 @@ class Community extends Model
     public function threads()
     {
         return $this->hasMany(Thread::class);
+    }
+    
+    public function getIconUrlAttribute()
+    {
+        if (!$this->icon) {
+            return null;
+        }
+        return asset('storage/' . $this->icon);
+    }
+    
+    public function bannedUsers()
+    {
+        return $this->hasMany(BannedUser::class);
+    }
+    
+    public function isUserBanned($userId)
+    {
+        return $this->bannedUsers()
+            ->where('user_id', $userId)
+            ->where('banned_until', '>', now())
+            ->exists();
     }
 }

@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\Interfaces\PostServiceInterface;
+use App\Services\Interfaces\SavePostServiceInterface;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
@@ -13,28 +16,28 @@ class ProfileController extends Controller
     public function show(Request $request)
     {
         $user = Auth::user();
-        $activeTab = $request->query('tab', 'posts'); // Paramètre d'URL au lieu de fragment
+        $activeTab = $request->query('tab', 'posts'); 
         
-        // Récupérer les données en fonction de l'onglet actif
+        $user->load('badges');
+        
         $posts = ($activeTab === 'posts') ? $this->getUserPosts($user->id, 10) : null;
         $comments = ($activeTab === 'comments') ? $user->comments()->with('post')->latest()->paginate(10) : null;
         $communities = ($activeTab === 'communities') ? $user->communities()->paginate(10) : null;
-        $savedPosts = ($activeTab === 'saved') ? app(\App\Services\Interfaces\SavePostServiceInterface::class)->getUserSavedPosts($user->id, 10) : null;
+        $savedPosts = ($activeTab === 'saved') ? app(SavePostServiceInterface::class)->getUserSavedPosts($user->id, 10) : null;
         
-        // Pagination
-        if ($posts instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+        if ($posts instanceof LengthAwarePaginator) {
             $posts->appends(['tab' => 'posts']);
         }
         
-        if ($comments instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+        if ($comments instanceof LengthAwarePaginator) {
             $comments->appends(['tab' => 'comments']);
         }
         
-        if ($communities instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+        if ($communities instanceof LengthAwarePaginator) {
             $communities->appends(['tab' => 'communities']);
         }
         
-        if ($savedPosts instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+        if ($savedPosts instanceof LengthAwarePaginator) {
             $savedPosts->appends(['tab' => 'saved']);
         }
         
@@ -43,8 +46,7 @@ class ProfileController extends Controller
     
     private function getUserPosts($userId, $perPage = 10)
     {
-        // Utilisation du PostService pour obtenir les posts paginés
-        $postService = app(\App\Services\Interfaces\PostServiceInterface::class);
+        $postService = app(PostServiceInterface::class);
         return $postService->getPostsByUser($userId, $perPage);
     }
     public function edit()
@@ -62,24 +64,18 @@ class ProfileController extends Controller
             'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'preferences' => ['nullable', 'string', 'max:1000'],
         ]);
-        
-        // S'assurer que preferences est du JSON valide ou null
+
         if (!empty($validated['preferences'])) {
             try {
-                // Convertir en JSON si ce n'est pas déjà du JSON
                 if (!is_array($validated['preferences'])) {
-                    // Encoder en JSON pour être sûr que c'est du JSON valide
                     $validated['preferences'] = json_encode([$validated['preferences']]);
                 }
             } catch (\Exception $e) {
-                // En cas d'erreur, mettre à null
                 $validated['preferences'] = null;
             }
         } else {
-            // Si vide, mettre à null
             $validated['preferences'] = null;
         }
-        
         $user->update($validated);
         return redirect()->route('profile.show')->with('success', 'Profil mis à jour!');
     }
@@ -94,32 +90,23 @@ class ProfileController extends Controller
         ]);
         
         $user = Auth::user();
-        
-        // Vérifier et créer le dossier s'il n'existe pas
         if (!file_exists(storage_path('app/public/avatars'))) {
             mkdir(storage_path('app/public/avatars'), 0755, true);
         }
         
-        // Supprimer l'ancien avatar s'il existe et n'est pas l'avatar par défaut
         if ($user->avatar && $user->avatar != 'avatars/default-avatar.png') {
             try {
                 if (Storage::disk('public')->exists($user->avatar)) {
                     Storage::disk('public')->delete($user->avatar);
                 }
             } catch (\Exception $e) {
-                // Ne rien faire si le fichier n'existe pas
             }
         }
         
-        // Générer un nom unique pour l'avatar
         $avatarName = 'avatar_' . $user->id . '_' . time() . '.' . $request->file('avatar')->getClientOriginalExtension();
-        
-        // Enregistrer l'avatar
         $path = $request->file('avatar')->storeAs('avatars', $avatarName, 'public');
-        
         $user->avatar = $path;
         $user->save();
-        
         return redirect()->route('profile.avatar')->with('success', 'Avatar changé!');
     }
 
@@ -127,21 +114,23 @@ class ProfileController extends Controller
     {
         return view('profile.communities');
     }
+    public function badges()
+    {
+        $user = Auth::user();
+        $user->load('badges'); 
+        return view('profile.badges');
+    }
+    
     public function savedPosts()
     {
         $user = Auth::user();
-        $savedPostService = app(\App\Services\Interfaces\SavePostServiceInterface::class);
+        $savedPostService = app(SavePostServiceInterface::class);
         $savedPosts = $savedPostService->getUserSavedPosts($user->id, 10);
-        
-        // Assurons-nous que la pagination est maintenue
-        if ($savedPosts instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+        if ($savedPosts instanceof LengthAwarePaginator) {
             $savedPosts->withQueryString()->withPath('');
         }
         
         return view('profile.saved-posts', compact('savedPosts'));
     }
-    public function settings()
-    {
-        return view('profile.settings');
-    }
+    
 }
