@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use App\Models\ReportType;
-use App\Http\Requests\StoreReportTypeRequest;
-use App\Http\Requests\UpdateReportTypeRequest;
+use App\Models\Badge;
+use App\Http\Requests\StoreBadgeRequest;
+use App\Http\Requests\UpdateBadgeRequest;
+use Illuminate\Routing\Controller;
 
-class ReportTypeController extends Controller
+class BadgeController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -27,7 +28,7 @@ class ReportTypeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreReportTypeRequest $request)
+    public function store(StoreBadgeRequest $request)
     {
         //
     }
@@ -35,7 +36,7 @@ class ReportTypeController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(ReportType $reportType)
+    public function show(Badge $badge)
     {
         //
     }
@@ -43,7 +44,7 @@ class ReportTypeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(ReportType $reportType)
+    public function edit(Badge $badge)
     {
         //
     }
@@ -51,7 +52,7 @@ class ReportTypeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateReportTypeRequest $request, ReportType $reportType)
+    public function update(UpdateBadgeRequest $request, Badge $badge)
     {
         //
     }
@@ -59,7 +60,7 @@ class ReportTypeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(ReportType $reportType)
+    public function destroy(Badge $badge)
     {
         //
     }

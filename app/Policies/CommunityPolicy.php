@@ -49,6 +49,14 @@ class CommunityPolicy
     }
 
     /**
+     * Determine whether the user can manage the community.
+     */
+    public function manageCommunity(User $user, Community $community): bool
+    {
+        return $user->id === $community->creator_id || $user->hasRole('Admin');
+    }
+
+    /**
      * Determine whether the user can restore the model.
      */
     public function restore(User $user, Community $community): bool

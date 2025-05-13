@@ -7,9 +7,7 @@ use App\Repositories\Interfaces\TagRepositoryInterface;
 
 class TagRepository extends BaseRepository implements TagRepositoryInterface
 {
-    /**
-     * Create a new class instance.
-     */
+    
     public function __construct(Tag $model)
     {
         parent::__construct($model);

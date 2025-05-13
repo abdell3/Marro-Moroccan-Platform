@@ -55,4 +55,9 @@ class BaseRepository implements BaseRepositoryInterface
     {
         return $this->model->paginate($perPage, $columns);
     }
+    
+    public function getModel()
+    {
+        return $this->model;
+    }
 }

@@ -15,11 +15,9 @@ class CheckPermission
             return redirect()->route('login')
                 ->with('error', 'Vous devez être connecté pour accéder à cette page.');
         }
-
         if (!$request->user()->hasPermission($permission)) {
             abort(403, 'Accès refusé: Vous n\'avez pas la permission nécessaire.');
         }
-
         return $next($request);
     }
 }

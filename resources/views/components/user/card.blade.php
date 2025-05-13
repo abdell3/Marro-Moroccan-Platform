@@ -15,9 +15,9 @@
                 </h3>
                 
                 <div class="flex items-center space-x-2">
-                    @if($user->badge)
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-{{ $user->badge->color }}-100 text-{{ $user->badge->color }}-800">
-                            {{ $user->badge->name }}
+                    @if($user->role)
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                            {{ $user->role->role_name }}
                         </span>
                     @endif
                     
@@ -50,6 +50,8 @@
                 <p class="text-xs text-gray-500">Communautés</p>
             </div>
         </div>
+        
+        <x-badges.user-badges :user="$user" />
         
         {{ $slot }}
     </div>

@@ -5,7 +5,6 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Colonne principale (liste des communautés) -->
         <div class="md:col-span-2">
             <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden mb-6">
                 <div class="p-6">
@@ -13,7 +12,6 @@
                         <div class="flex justify-between items-center mb-4">
                             <h2 class="text-xl font-bold text-gray-900 dark:text-white">Toutes les communautés</h2>
                             
-                            <!-- Recherche -->
                             <form action="{{ route('communities.search') }}" method="GET" class="relative">
                                 <input type="text" name="q" placeholder="Rechercher..." class="pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 dark:bg-gray-800 dark:text-white">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -31,8 +29,14 @@
                                 <a href="{{ route('communities.show', $community) }}" class="block">
                                     <div class="p-4">
                                         <div class="flex items-center mb-3">
-                                            <div class="flex-shrink-0 w-12 h-12 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center text-xl font-bold text-white">
-                                                {{ substr($community->theme_name, 0, 1) }}
+                                            <div class="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center overflow-hidden">
+                                                @if($community->icon_url)
+                                                    <img src="{{ $community->icon_url }}" alt="{{ $community->theme_name }}" class="w-full h-full object-cover">
+                                                @else
+                                                    <div class="bg-gray-300 dark:bg-gray-600 w-full h-full flex items-center justify-center text-xl font-bold text-white">
+                                                        {{ substr($community->theme_name, 0, 1) }}
+                                                    </div>
+                                                @endif
                                             </div>
                                             <div class="ml-3">
                                                 <div class="text-lg font-medium text-gray-900 dark:text-white">{{ $community->theme_name }}</div>
@@ -86,9 +90,7 @@
             </div>
         </div>
 
-        <!-- Barre latérale -->
         <div>
-            <!-- Créer une communauté -->
             <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden mb-6">
                 <div class="p-6">
                     <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Créer une communauté</h2>
@@ -99,15 +101,20 @@
                 </div>
             </div>
 
-            <!-- Communautés populaires -->
             <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden mb-6">
                 <div class="p-6">
                     <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Communautés populaires</h2>
                     <div class="space-y-4">
                         @forelse($populaires as $communaute)
                             <a href="{{ route('communities.show', $communaute) }}" class="flex items-center p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition">
-                                <div class="flex-shrink-0 w-10 h-10 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center text-lg font-bold text-white">
-                                    {{ substr($communaute->theme_name, 0, 1) }}
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
+                                    @if($communaute->icon_url)
+                                        <img src="{{ $communaute->icon_url }}" alt="{{ $communaute->theme_name }}" class="w-full h-full object-cover">
+                                    @else
+                                        <div class="bg-gray-300 dark:bg-gray-600 w-full h-full flex items-center justify-center text-lg font-bold text-white">
+                                            {{ substr($communaute->theme_name, 0, 1) }}
+                                        </div>
+                                    @endif
                                 </div>
                                 <div class="ml-3">
                                     <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $communaute->theme_name }}</div>
@@ -121,7 +128,6 @@
                 </div>
             </div>
 
-            <!-- Mes communautés -->
             @auth
                 <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
                     <div class="p-6">
@@ -129,8 +135,14 @@
                         <div class="space-y-4">
                             @forelse(Auth::user()->communities as $communaute)
                                 <a href="{{ route('communities.show', $communaute) }}" class="flex items-center p-3 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md transition">
-                                    <div class="flex-shrink-0 w-10 h-10 bg-gray-300 dark:bg-gray-600 rounded-full flex items-center justify-center text-lg font-bold text-white">
-                                        {{ substr($communaute->theme_name, 0, 1) }}
+                                    <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center overflow-hidden">
+                                        @if($communaute->icon_url)
+                                            <img src="{{ $communaute->icon_url }}" alt="{{ $communaute->theme_name }}" class="w-full h-full object-cover">
+                                        @else
+                                            <div class="bg-gray-300 dark:bg-gray-600 w-full h-full flex items-center justify-center text-lg font-bold text-white">
+                                                {{ substr($communaute->theme_name, 0, 1) }}
+                                            </div>
+                                        @endif
                                     </div>
                                     <div class="ml-3">
                                         <div class="text-sm font-medium text-gray-900 dark:text-white">{{ $communaute->theme_name }}</div>

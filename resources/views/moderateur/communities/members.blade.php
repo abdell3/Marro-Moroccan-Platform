@@ -4,7 +4,7 @@
             <div class="flex flex-col md:flex-row md:items-center md:justify-between">
                 <div>
                     <div class="flex items-center mb-2">
-                        <a href="{{ route('moderator.communities') }}" class="inline-flex items-center text-sm text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 mr-3">
+                        <a href="{{ route('moderateur.communities') }}" class="inline-flex items-center text-sm text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400 mr-3">
                             <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                             </svg>
@@ -29,7 +29,7 @@
                         </svg>
                         Voir la communauté
                     </a>
-                    <a href="{{ route('moderator.community.stats', $community) }}" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600">
+                    <a href="{{ route('moderateur.community.stats', $community) }}" class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 dark:hover:bg-gray-600">
                         <svg class="h-4 w-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
@@ -41,7 +41,7 @@
 
         <!-- Recherche et filtres -->
         <div class="bg-white dark:bg-gray-800 shadow rounded-lg mb-6 p-4">
-            <form action="{{ route('moderator.community.members', $community) }}" method="GET" class="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
+            <form action="{{ route('moderateur.community.members', $community) }}" method="GET" class="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4">
                 <div class="flex-1">
                     <label for="search" class="sr-only">Rechercher</label>
                     <div class="relative rounded-md shadow-sm">
@@ -81,7 +81,7 @@
                                             {{ $member->prenom }} {{ $member->nom }}
                                         </div>
                                         <div class="text-xs text-gray-500 dark:text-gray-400">
-                                            Membre depuis {{ $member->pivot->created_at->diffForHumans() }}
+                                            Membre depuis {{ $member->pivot && $member->pivot->created_at ? $member->pivot->created_at->diffForHumans() : 'N/A' }}
                                         </div>
                                         <div class="mt-1 text-xs text-gray-600 dark:text-gray-400 flex flex-wrap gap-2">
                                             <span class="inline-flex items-center">
@@ -124,7 +124,7 @@
             <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
             <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <form action="{{ route('moderator.community.ban-user', $community) }}" method="POST">
+                <form action="{{ route('moderateur.community.ban-user', $community) }}" method="POST">
                     @csrf
                     <input type="hidden" name="user_id" id="ban_user_id">
                     <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">

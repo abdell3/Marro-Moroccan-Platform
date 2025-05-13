@@ -1,8 +1,6 @@
 <x-layouts.app :title="$community->theme_name . ' | Marro'">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Colonne principale -->
         <div class="md:col-span-2">
-            <!-- En-tête de la communauté -->
             <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden mb-6">
                 <div class="bg-gradient-to-r from-purple-500 to-blue-500 h-32 relative">
                     @if($community->icon)
@@ -84,7 +82,6 @@
                     @endcan
                 </div>
                 
-                <!-- Onglets -->
                 <div class="border-t border-gray-200 dark:border-gray-700 px-6 py-4">
                     <div class="flex space-x-8">
                         <a href="#posts" class="border-b-2 border-red-500 text-gray-900 dark:text-white px-1 py-4 text-sm font-medium">
@@ -97,7 +94,6 @@
                 </div>
             </div>
             
-            <!-- Posts de la communauté -->
             <div id="posts" class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden mb-6">
                 <div class="p-6">
                     <div class="flex justify-between items-center mb-6">
@@ -145,7 +141,6 @@
                 </div>
             </div>
             
-            <!-- Discussions de la communauté -->
             <div id="threads" class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden" style="display: none;">
                 <div class="p-6">
                     <div class="flex justify-between items-center mb-6">
@@ -163,7 +158,13 @@
                                 <a href="{{ route('threads.show', $thread) }}" class="block p-4">
                                     <div class="flex items-start">
                                         <div class="flex-shrink-0 mt-1">
-                                            <img class="h-10 w-10 rounded-full" src="{{ asset($thread->user->avatar ?? 'avatars/default.png') }}" alt="{{ $thread->user->nom ?? 'Utilisateur' }}">
+                                            @if($thread->user && $thread->user->avatar)
+                                                <img class="h-10 w-10 rounded-full" src="{{ asset('storage/' . $thread->user->avatar) }}" alt="{{ $thread->user->nom ?? 'Utilisateur' }}">
+                                            @else
+                                                <div class="h-10 w-10 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-sm font-bold text-white">
+                                                    {{ $thread->user ? substr($thread->user->prenom, 0, 1) : 'U' }}
+                                                </div>
+                                            @endif
                                         </div>
                                         <div class="ml-3 flex-1">
                                             <h3 class="text-lg font-medium text-gray-900 dark:text-white">{{ $thread->title }}</h3>
@@ -213,9 +214,7 @@
             </div>
         </div>
         
-        <!-- Barre latérale -->
         <div>
-            <!-- À propos de la communauté -->
             <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden mb-6">
                 <div class="p-6">
                     <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">À propos</h2>
@@ -224,8 +223,14 @@
                             <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Créée par</h3>
                             <div class="mt-1 flex items-center">
                                 <div class="flex-shrink-0">
-                                    <img class="h-8 w-8 rounded-full" src="{{ asset($community->creator->avatar ?? 'avatars/default.png') }}" alt="{{ $community->creator->nom ?? 'Créateur' }}">
-                                </div>
+                                @if($community->creator && $community->creator->avatar)
+                                        <img class="h-8 w-8 rounded-full" src="{{ asset('storage/' . $community->creator->avatar) }}" alt="{{ $community->creator->nom ?? 'Créateur' }}">
+                                        @else
+                                            <div class="h-8 w-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-sm font-bold text-white">
+                                                {{ $community->creator ? substr($community->creator->prenom, 0, 1) : 'C' }}
+                                            </div>
+                                        @endif
+                                    </div>
                                 <div class="ml-2">
                                     <span class="text-sm font-medium text-gray-900 dark:text-white">{{ $community->creator->prenom }} {{ $community->creator->nom }}</span>
                                 </div>
@@ -272,7 +277,6 @@
                 </div>
             </div>
             
-            <!-- Posts populaires -->
             <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
                 <div class="p-6">
                     <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Posts populaires</h2>
@@ -306,15 +310,12 @@
         postsTab.addEventListener('click', function(e) {
             e.preventDefault();
             
-            // Activer l'onglet posts
             postsTab.classList.add('border-red-500', 'text-gray-900', 'dark:text-white');
             postsTab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300', 'dark:text-gray-400', 'dark:hover:text-gray-300', 'dark:hover:border-gray-600');
             
-            // Désactiver l'onglet threads
             threadsTab.classList.remove('border-red-500', 'text-gray-900', 'dark:text-white');
             threadsTab.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300', 'dark:text-gray-400', 'dark:hover:text-gray-300', 'dark:hover:border-gray-600');
             
-            // Afficher/masquer les sections
             postsSection.style.display = 'block';
             threadsSection.style.display = 'none';
         });
@@ -322,15 +323,12 @@
         threadsTab.addEventListener('click', function(e) {
             e.preventDefault();
             
-            // Activer l'onglet threads
             threadsTab.classList.add('border-red-500', 'text-gray-900', 'dark:text-white');
             threadsTab.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300', 'dark:text-gray-400', 'dark:hover:text-gray-300', 'dark:hover:border-gray-600');
             
-            // Désactiver l'onglet posts
             postsTab.classList.remove('border-red-500', 'text-gray-900', 'dark:text-white');
             postsTab.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300', 'dark:text-gray-400', 'dark:hover:text-gray-300', 'dark:hover:border-gray-600');
             
-            // Afficher/masquer les sections
             postsSection.style.display = 'none';
             threadsSection.style.display = 'block';
         });

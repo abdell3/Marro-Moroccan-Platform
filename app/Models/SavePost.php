@@ -9,7 +9,6 @@ use App\Models\Post;
 
 class SavePost extends Model
 {
-    /** @use HasFactory<\Database\Factories\SavePostFactory> */
     use HasFactory;
 
 

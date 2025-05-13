@@ -138,4 +138,9 @@ class PostService implements PostServiceInterface
     {
         return $this->postRepository->enleverTag($postId, $tagId);
     }
+    
+    public function getPostsWithAuteur($communityId, $perPage = 10)
+    {
+        return $this->postRepository->getPostsByCommunity($communityId, $perPage);
+    }
 }

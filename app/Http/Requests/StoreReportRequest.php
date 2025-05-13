@@ -11,7 +11,7 @@ class StoreReportRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,8 @@ class StoreReportRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'action_taken' => 'required|string|in:ignored,content_removed,user_banned,other',
+            'admin_notes' => 'nullable|string',
         ];
     }
 }

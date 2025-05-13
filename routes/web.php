@@ -4,18 +4,20 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\CommunityController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PollController;
 use App\Http\Controllers\PostController;
-use App\Http\Controllers\RoleController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\SavePostController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\ThreadController;
+use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\ReportTypeController;
+use App\Http\Controllers\Admin\PermissionController;
+use App\Models\Post;
 use Illuminate\Support\Facades\Route;
 
-// Route de diagnostic pour la pagination
 Route::get('/test-pagination', function() {
-    $posts = \App\Models\Post::orderBy('created_at', 'desc')->paginate(10);
+    $posts = Post::orderBy('created_at', 'desc')->paginate(10);
     return view('test-pagination', ['posts' => $posts]);
 });
 
@@ -55,9 +57,9 @@ Route::middleware('auth')->group(function () {
 
 
     Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware('check.role:User')
     ->name('dashboard');
 
-    // Routes pour les rapports utilisateurs
     Route::get('/report/post/{post}', [App\Http\Controllers\ReportController::class, 'createForPost'])->name('reports.post.create');
     Route::get('/report/comment/{comment}', [App\Http\Controllers\ReportController::class, 'createForComment'])->name('reports.comment.create');
     Route::get('/report/community/{community}', [App\Http\Controllers\ReportController::class, 'createForCommunity'])->name('reports.community.create');
@@ -70,6 +72,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
     Route::get('/profile/avatar', [App\Http\Controllers\ProfileController::class, 'avatar'])->name('profile.avatar');
     Route::put('/profile/avatar', [App\Http\Controllers\ProfileController::class, 'avatarUpdate'])->name('profile.avatar.update');
+    Route::get('/profile/badges', [App\Http\Controllers\ProfileController::class, 'badges'])->name('profile.badges');
     Route::get('/profile/communities', [App\Http\Controllers\ProfileController::class, 'communities'])->name('profile.communities');
     Route::get('/profile/saved-posts', [App\Http\Controllers\ProfileController::class, 'savedPosts'])->name('profile.saved-posts');
     Route::get('/profile/settings', [App\Http\Controllers\ProfileController::class, 'settings'])->name('profile.settings');
@@ -139,43 +142,88 @@ Route::middleware(['auth', 'check.permission:delete_tags'])->group(function () {
 
 
 
-Route::middleware(['auth', 'role:Admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
+Route::middleware(['auth', 'check.role:Admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\Admin\AdminTempController::class, 'index'])->name('dashboard');
+    Route::get('/statistics', [App\Http\Controllers\Admin\AdminDashboardController::class, 'statistics'])->name('statistics');
+    
+    Route::get('/profile', [App\Http\Controllers\Admin\ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [App\Http\Controllers\Admin\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [App\Http\Controllers\Admin\ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile/avatar', [App\Http\Controllers\Admin\ProfileController::class, 'avatar'])->name('profile.avatar');
+    Route::put('/profile/avatar', [App\Http\Controllers\Admin\ProfileController::class, 'avatarUpdate'])->name('profile.avatar.update');
+    
+    Route::get('/users', [App\Http\Controllers\Admin\AdminDashboardController::class, 'users'])->name('users.index');
+    Route::get('/users/{user}', [App\Http\Controllers\Admin\AdminDashboardController::class, 'showUser'])->name('users.show');
+    Route::get('/users/{user}/edit', [App\Http\Controllers\Admin\AdminDashboardController::class, 'editUser'])->name('users.edit');
+    Route::put('/users/{user}', [App\Http\Controllers\Admin\AdminDashboardController::class, 'updateUser'])->name('users.update');
+    Route::delete('/users/{user}', [App\Http\Controllers\Admin\AdminDashboardController::class, 'deleteUser'])->name('users.delete');
+    
+    Route::get('/communities', [App\Http\Controllers\Admin\AdminDashboardController::class, 'communities'])->name('communities.index');
+    Route::get('/communities/{community}', [App\Http\Controllers\Admin\AdminDashboardController::class, 'showCommunity'])->name('communities.show');
+    Route::get('/communities/{community}/edit', [App\Http\Controllers\Admin\AdminDashboardController::class, 'editCommunity'])->name('communities.edit');
+    Route::put('/communities/{community}', [App\Http\Controllers\Admin\AdminDashboardController::class, 'updateCommunity'])->name('communities.update');
+    
+    Route::get('/badges', [App\Http\Controllers\Admin\AdminDashboardController::class, 'badges'])->name('badges.index');
+    Route::get('/badges/create', [App\Http\Controllers\Admin\AdminDashboardController::class, 'createBadge'])->name('badges.create');
+    Route::post('/badges', [App\Http\Controllers\Admin\AdminDashboardController::class, 'storeBadge'])->name('badges.store');
+    Route::get('/badges/{badge}/edit', [App\Http\Controllers\Admin\AdminDashboardController::class, 'editBadge'])->name('badges.edit');
+    Route::put('/badges/{badge}', [App\Http\Controllers\Admin\AdminDashboardController::class, 'updateBadge'])->name('badges.update');
+    Route::delete('/badges/{badge}', [App\Http\Controllers\Admin\AdminDashboardController::class, 'deleteBadge'])->name('badges.delete');
+    
     Route::resource('roles', RoleController::class);
     Route::get('/roles/{role}/permissions', [RoleController::class, 'assignPermissions'])->name('roles.permissions');
     Route::post('/roles/{role}/permissions', [RoleController::class, 'updatePermissions'])->name('roles.permissions.update');
     Route::resource('permissions', PermissionController::class);
     
-    // Routes pour la gestion des types de rapports
-    Route::resource('report-types', Admin\ReportTypeController::class);
+    Route::resource('report-types', ReportTypeController::class);
     
-    // Routes pour la gestion des rapports
-    Route::get('/reports', [Admin\ReportController::class, 'index'])->name('reports.index');
-    Route::get('/reports/{report}', [Admin\ReportController::class, 'show'])->name('reports.show');
-    Route::post('/reports/{report}/handle', [Admin\ReportController::class, 'handle'])->name('reports.handle');
-    Route::get('/reports-statistics', [Admin\ReportController::class, 'statistics'])->name('reports.statistics');
+    Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+    Route::get('/reports/{report}', [ReportController::class, 'show'])->name('reports.show');
+    Route::post('/reports/{report}/handle', [ReportController::class, 'handle'])->name('reports.handle');
+    Route::get('/reports-statistics', [ReportController::class, 'statistics'])->name('reports.statistics');
 });
 
 
-Route::middleware(['auth', 'role:Moderateur'])->prefix('moderator')->name('moderator.')->group(function () {
-    // Dashboard modérateur
+Route::middleware(['auth', 'check.role:Moderateur'])->prefix('moderateur')->name('moderateur.')->group(function () {
     Route::get('/dashboard', [App\Http\Controllers\Moderateur\DashboardController::class, 'index'])->name('dashboard');
     
-    // Gestion des communautés du modérateur
     Route::get('/communities', [App\Http\Controllers\Moderateur\DashboardController::class, 'communities'])->name('communities');
+    
+    Route::get('/communities/create', [CommunityController::class, 'create'])->name('communities.create');
+    Route::post('/communities', [CommunityController::class, 'store'])->name('communities.store');
+    Route::get('/communities/{community}', [App\Http\Controllers\Moderateur\CommunityController::class, 'show'])->name('communities.show');
+    Route::get('/communities/{community}/edit', [CommunityController::class, 'edit'])->name('communities.edit');
+    Route::put('/communities/{community}', [CommunityController::class, 'update'])->name('communities.update');
+    
     Route::get('/communities/{community}/members', [App\Http\Controllers\Moderateur\DashboardController::class, 'communityMembers'])->name('community.members');
     Route::get('/communities/{community}/stats', [App\Http\Controllers\Moderateur\DashboardController::class, 'communityStats'])->name('community.stats');
     Route::post('/communities/{community}/ban-user', [App\Http\Controllers\Moderateur\DashboardController::class, 'banUser'])->name('community.ban-user');
     
-    // Routes pour la gestion des rapports par les modérateurs
     Route::get('/reports', [App\Http\Controllers\Moderateur\ReportController::class, 'index'])->name('reports.index');
     Route::get('/reports/{report}', [App\Http\Controllers\Moderateur\ReportController::class, 'show'])->name('reports.show');
     Route::post('/reports/{report}/handle', [App\Http\Controllers\Moderateur\ReportController::class, 'handle'])->name('reports.handle');
     
-    // Routes spécifiques par type de contenu
     Route::get('/reported-posts', [App\Http\Controllers\Moderateur\ReportController::class, 'posts'])->name('reports.posts');
     Route::get('/reported-comments', [App\Http\Controllers\Moderateur\ReportController::class, 'comments'])->name('reports.comments');
     Route::get('/reported-communities', [App\Http\Controllers\Moderateur\ReportController::class, 'communities'])->name('reports.communities');
+    
+    Route::get('/posts/{post}', [App\Http\Controllers\Moderateur\PostController::class, 'show'])->name('posts.show');
+    Route::delete('/posts/{post}', [App\Http\Controllers\Moderateur\PostController::class, 'destroy'])->name('posts.destroy');
+    
+    Route::get('/statistics', [App\Http\Controllers\Moderateur\StatisticsController::class, 'index'])->name('statistics');
+    
+    Route::get('/profile', [App\Http\Controllers\Moderateur\ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [App\Http\Controllers\Moderateur\ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [App\Http\Controllers\Moderateur\ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile/avatar', [App\Http\Controllers\Moderateur\ProfileController::class, 'avatar'])->name('profile.avatar');
+    Route::put('/profile/avatar', [App\Http\Controllers\Moderateur\ProfileController::class, 'avatarUpdate'])->name('profile.avatar.update');
 });
+
+Route::redirect('/moderator', '/moderateur/dashboard');
+Route::redirect('/moderator/dashboard', '/moderateur/dashboard');
+Route::redirect('/moderator/communities', '/moderateur/communities');
+Route::redirect('/moderator/communities/create', '/moderateur/communities/create');
+Route::redirect('/moderator/reports', '/moderateur/reports');
+Route::redirect('/moderator/profile', '/moderateur/profile');
+Route::redirect('/moderator/profile/edit', '/moderateur/profile/edit');
+Route::redirect('/moderator/profile/avatar', '/moderateur/profile/avatar');

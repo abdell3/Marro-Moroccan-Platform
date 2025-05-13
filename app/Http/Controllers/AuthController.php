@@ -11,9 +11,7 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -61,51 +59,20 @@ class AuthController extends Controller
         $password = $request->password;
         $remember = $request->filled('remember');
         
-        Log::info('Tentative de connexion', ['email' => $email]);
-        
-        // Déconnecter tout utilisateur déjà connecté
         if (Auth::check()) {
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
         }
         
-        // Recherche directe de l'utilisateur
         $user = User::where('email', $email)->first();
-        
         if ($user && Hash::check($password, $user->password)) {
-            // Force le chargement de la relation rôle
             $user->load('role');
-            
-            Log::info('Utilisateur trouvé', [
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'role_id' => $user->role_id,
-                'role_name' => $user->role?->role_name ?? 'Aucun rôle'
-            ]);
-            
-            // Connexion manuelle pour contourner le problème d'Auth::attempt
             Auth::login($user, $remember);
             $request->session()->regenerate();
-            
-            Log::info('Utilisateur authentifié manuellement', [
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'role_id' => $user->role_id,
-                'role_name' => $user->role?->role_name ?? 'Aucun rôle',
-                'auth_id' => Auth::id()
-            ]);
-            
             $user->update(['last_login_at' => now()]);
-            
             return $this->redirectBasedOnRole($user);
         }
-        
-        Log::warning('Échec de connexion', [
-            'email' => $email,
-            'user_existe' => $user ? 'oui' : 'non'
-        ]);
-
         return back()->withErrors([
             'email' => 'Les identifiants fournis ne correspondent à aucun compte.',
         ]);
@@ -113,21 +80,13 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        // Déconnecter l'utilisateur actuel
         Auth::logout();
-        
-        // Invalider la session
         $request->session()->invalidate();
-        
-        // Régénérer le jeton CSRF pour éviter les attaques
         $request->session()->regenerateToken();
-        
-        // Rediriger vers la page d'accueil avec un message de succès
         return redirect()->route('home')
             ->with('success', 'Vous avez été déconnecté avec succès.');
     }
 
-   
     public function dashboard()
     {
         return view('dashboard');
@@ -135,31 +94,15 @@ class AuthController extends Controller
 
     private function redirectBasedOnRole(User $user)
     {
-        Log::info('Redirection basée sur le rôle', [
-            'user_id' => $user->id,
-            'email' => $user->email,
-            'role_id' => $user->role_id,
-            'role_name' => $user->role?->role_name ?? 'Aucun rôle'
-        ]);
-        
+        $user->load('role');
         $isAdmin = $user->hasRole('Admin');
         $isModerator = $user->hasRole('Moderateur');
-        
-        Log::info('Vérification des rôles', [
-            'isAdmin' => $isAdmin ? 'oui' : 'non',
-            'isModerator' => $isModerator ? 'oui' : 'non',
-            'role_object' => $user->role ? json_encode($user->role->toArray()) : 'null'
-        ]);
-        
         if ($isAdmin) {
             return redirect()->route('admin.dashboard');
         }
-        
         if ($isModerator) {
-            Log::info('Redirection vers moderator.dashboard');
-            return redirect()->route('moderator.dashboard');
+            return redirect()->route('moderateur.dashboard');
         }
-        
         return redirect()->route('dashboard');
     }
 }

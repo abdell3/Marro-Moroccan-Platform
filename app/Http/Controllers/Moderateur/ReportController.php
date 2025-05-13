@@ -24,11 +24,29 @@ class ReportController extends Controller
         $this->middleware('role:Moderateur');
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $reports = $this->reportService->getUnhandledReports();
+        $filter = $request->query('filter', 'pending');
+        
+        if ($filter === 'handled') {
+            $reports = $this->reportService->getHandledReports();
+        } elseif ($filter === 'all') {
+            $reports = $this->reportService->getAllReports();
+        } else {
+            $reports = $this->reportService->getUnhandledReports();
+        }
+        
         $reportTypes = $this->reportTypeService->getAllReportTypes();
-        return view('moderateur.reports.index', compact('reports', 'reportTypes'));
+        $pendingCount = $this->reportService->countPendingReports();
+        $handledCount = $this->reportService->countHandledReports();
+        
+        return view('moderateur.reports.index', compact(
+            'reports', 
+            'reportTypes', 
+            'filter', 
+            'pendingCount', 
+            'handledCount'
+        ));
     }
 
     public function show(Report $report)

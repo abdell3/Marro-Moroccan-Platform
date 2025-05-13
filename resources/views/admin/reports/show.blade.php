@@ -1,4 +1,4 @@
-<x-layouts.admin :title="'Détails du signalement #' . $report->id . ' | Admin'">
+<x-layouts.app :title="'Détails du signalement #' . $report->id . ' | Admin'">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="mb-6">
             <a href="{{ route('admin.reports.index') }}" class="inline-flex items-center text-sm text-gray-600 hover:text-red-600 dark:text-gray-400 dark:hover:text-red-400">
@@ -10,7 +10,6 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Détails du signalement -->
             <div class="lg:col-span-2 space-y-6">
                 <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
@@ -103,7 +102,6 @@
                     </div>
                 </div>
 
-                <!-- Contenu signalé -->
                 <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden">
                     <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
                         <h2 class="text-lg font-medium text-gray-900 dark:text-white">
@@ -210,7 +208,6 @@
                 </div>
             </div>
 
-            <!-- Formulaire de traitement (si non traité) -->
             <div class="lg:col-span-1">
                 @if(!$report->handled_at)
                     <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-hidden sticky top-6">

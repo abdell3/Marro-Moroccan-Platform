@@ -19,4 +19,21 @@ interface CommunityServiceInterface
     public function getPosts($communityId, $paginate = 15);
     public function getThreads($communityId, $paginate = 15);
     public function searchCommunities($keyword, $paginate = 15);
+    public function getCommunitiesCreatedByUserWithCounts($userId);
+    public function getCommunityMembersWithStats($communityId, $perPage = 20);
+    public function getPostsPerDay($communityId, $days = 30);
+    public function getMembersPerDay($communityId, $days = 30);
+    public function getTopMembers($communityId, $limit = 5);
+    public function banUserFromCommunity($communityId, $userId, $moderatorId, $reason);
+    public function getCommunitiesCreatedByUser($userId);
+    public function countNewMembersByPeriod($userId, $days = 30, $communityId = null);
+    public function countNewPostsByPeriod($userId, $days = 30, $communityId = null);
+    public function getCommunityStatsByPeriod($userId, $days = 30, $communityId = null);
+    public function getMembersCount($communityId);
+    public function getCommunityMembersWithPostsCount($communityId, $perPage = 20);
+    public function getPostsCount($communityId);
+    public function getRecentPostsCount($communityId, $days = 30);
+    public function getNewMembersCount($communityId, $days = 30);
+    public function getTopMembersWithPostsCount($communityId, $limit = 5);
+    public function getActiveCommunities($limit = 5);
 }

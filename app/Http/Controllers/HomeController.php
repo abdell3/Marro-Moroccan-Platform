@@ -30,14 +30,12 @@ class HomeController extends Controller
 
     public function index()
     {
-        // Utilisons la pagination pour les posts récents
         $recentPosts = $this->postService->getDerniersPostsPagines(10); 
         $popularCommunities = $this->communityService->getCommunitiesPopulaires(7);
         $popularTags = $this->tagService->getTagsPopulaires(10);
         $isAuthenticated = auth()->check();
         $user = auth()->user();
         
-        // Debug: Ajoutons des informations pour vérifier la pagination
         if ($recentPosts instanceof \Illuminate\Pagination\LengthAwarePaginator) {
             \Illuminate\Support\Facades\Log::info('Home - Pagination trouvée: ' . $recentPosts->total() . ' éléments, ' . $recentPosts->perPage() . ' par page');
         } else {

@@ -9,7 +9,6 @@ use App\Models\Community;
 
 class Thread extends Model
 {
-    /** @use HasFactory<\Database\Factories\ThreadFactory> */
     use HasFactory;
 
 

@@ -102,7 +102,6 @@ class PollRepository extends BaseRepository implements PollRepositoryInterface
                     'count' => $count
                 ];
             }
-            
             return $result;
         }
         $votes = $poll->voters()
@@ -116,7 +115,6 @@ class PollRepository extends BaseRepository implements PollRepositoryInterface
         for ($i = 0; $i <= 5; $i++) {
             $distribution[$i] = $votes[$i] ?? 0;
         }
-        
         return $distribution;
     }
 }

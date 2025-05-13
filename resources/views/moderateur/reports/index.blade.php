@@ -5,20 +5,35 @@
             <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Gérez les signalements de contenu inapproprié</p>
         </div>
 
-        <!-- Navigation des signalements -->
+        <!-- Navigation des signalements par type -->
         <div class="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
             <div class="flex border-b border-gray-200 dark:border-gray-700">
-                <a href="{{ route('moderator.reports.index') }}" class="px-6 py-3 text-center text-sm font-medium {{ request()->routeIs('moderator.reports.index') ? 'text-red-600 border-b-2 border-red-600 dark:text-red-500 dark:border-red-500' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300' }}">
+                <a href="{{ route('moderateur.reports.index') }}" class="px-6 py-3 text-center text-sm font-medium {{ request()->routeIs('moderateur.reports.index') && !request()->query('filter') ? 'text-red-600 border-b-2 border-red-600 dark:text-red-500 dark:border-red-500' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300' }}">
                     Tous les signalements
                 </a>
-                <a href="{{ route('moderator.reports.posts') }}" class="px-6 py-3 text-center text-sm font-medium {{ request()->routeIs('moderator.reports.posts') ? 'text-red-600 border-b-2 border-red-600 dark:text-red-500 dark:border-red-500' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300' }}">
+                <a href="{{ route('moderateur.reports.posts') }}" class="px-6 py-3 text-center text-sm font-medium {{ request()->routeIs('moderateur.reports.posts') ? 'text-red-600 border-b-2 border-red-600 dark:text-red-500 dark:border-red-500' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300' }}">
                     Posts
                 </a>
-                <a href="{{ route('moderator.reports.comments') }}" class="px-6 py-3 text-center text-sm font-medium {{ request()->routeIs('moderator.reports.comments') ? 'text-red-600 border-b-2 border-red-600 dark:text-red-500 dark:border-red-500' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300' }}">
+                <a href="{{ route('moderateur.reports.comments') }}" class="px-6 py-3 text-center text-sm font-medium {{ request()->routeIs('moderateur.reports.comments') ? 'text-red-600 border-b-2 border-red-600 dark:text-red-500 dark:border-red-500' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300' }}">
                     Commentaires
                 </a>
-                <a href="{{ route('moderator.reports.communities') }}" class="px-6 py-3 text-center text-sm font-medium {{ request()->routeIs('moderator.reports.communities') ? 'text-red-600 border-b-2 border-red-600 dark:text-red-500 dark:border-red-500' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300' }}">
+                <a href="{{ route('moderateur.reports.communities') }}" class="px-6 py-3 text-center text-sm font-medium {{ request()->routeIs('moderateur.reports.communities') ? 'text-red-600 border-b-2 border-red-600 dark:text-red-500 dark:border-red-500' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300' }}">
                     Communautés
+                </a>
+            </div>
+        </div>
+        
+        <!-- Filtres par état des signalements -->
+        <div class="mb-6 bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+            <div class="flex border-b border-gray-200 dark:border-gray-700">
+                <a href="{{ route('moderateur.reports.index', ['filter' => 'pending']) }}" class="px-6 py-3 text-center text-sm font-medium {{ $filter === 'pending' ? 'text-red-600 border-b-2 border-red-600 dark:text-red-500 dark:border-red-500' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300' }}">
+                    En attente ({{ $pendingCount }})
+                </a>
+                <a href="{{ route('moderateur.reports.index', ['filter' => 'handled']) }}" class="px-6 py-3 text-center text-sm font-medium {{ $filter === 'handled' ? 'text-red-600 border-b-2 border-red-600 dark:text-red-500 dark:border-red-500' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300' }}">
+                    Traités ({{ $handledCount }})
+                </a>
+                <a href="{{ route('moderateur.reports.index', ['filter' => 'all']) }}" class="px-6 py-3 text-center text-sm font-medium {{ $filter === 'all' ? 'text-red-600 border-b-2 border-red-600 dark:text-red-500 dark:border-red-500' : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300' }}">
+                    Tous ({{ $pendingCount + $handledCount }})
                 </a>
             </div>
         </div>
@@ -27,7 +42,13 @@
         <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
             <div class="px-4 py-5 sm:px-6 border-b border-gray-200 dark:border-gray-700">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white">
-                    Signalements en attente
+                    @if($filter === 'pending')
+                        Signalements en attente
+                    @elseif($filter === 'handled')
+                        Signalements traités
+                    @else
+                        Tous les signalements
+                    @endif
                 </h3>
                 <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
                     {{ $reports->total() }} signalements trouvés
@@ -52,6 +73,11 @@
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             Date
                                         </th>
+                                        @if($filter === 'handled' || $filter === 'all')
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                                            État / Action
+                                        </th>
+                                        @endif
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                                             Actions
                                         </th>
@@ -83,16 +109,56 @@
                                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                                 {{ $report->created_at->format('d/m/Y H:i') }}
                                             </td>
+                                            @if($filter === 'handled' || $filter === 'all')
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                                @if($report->handled_at)
+                                                    <div>
+                                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200">
+                                                            Traité le {{ $report->handled_at->format('d/m/Y H:i') }}
+                                                        </span>
+                                                    </div>
+                                                    <div class="mt-1">
+                                                    @if($report->action_taken === 'content_removed')
+                                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200">
+                                                            Contenu supprimé
+                                                        </span>
+                                                    @elseif($report->action_taken === 'user_banned')
+                                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                                            Utilisateur banni
+                                                        </span>
+                                                    @elseif($report->action_taken === 'ignored')
+                                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200">
+                                                            Ignoré
+                                                        </span>
+                                                    @else
+                                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200">
+                                                            Autre action
+                                                        </span>
+                                                    @endif
+                                                    </div>
+                                                @else
+                                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                                        En attente
+                                                    </span>
+                                                @endif
+                                            </td>
+                                            @endif
                                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                                <a href="{{ route('moderator.reports.show', $report) }}" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
+                                                <a href="{{ route('moderateur.reports.show', $report) }}" class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300">
                                                     Détails
                                                 </a>
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
-                                                Aucun signalement non traité trouvé
+                                            <td colspan="{{ ($filter === 'handled' || $filter === 'all') ? 6 : 5 }}" class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400 text-center">
+                                                @if($filter === 'pending')
+                                                    Aucun signalement en attente
+                                                @elseif($filter === 'handled')
+                                                    Aucun signalement traité
+                                                @else
+                                                    Aucun signalement trouvé
+                                                @endif
                                             </td>
                                         </tr>
                                     @endforelse
@@ -103,7 +169,7 @@
                 </div>
             </div>
             <div class="px-4 py-3 border-t border-gray-200 dark:border-gray-700">
-                {{ $reports->links() }}
+                {{ $reports->appends(['filter' => $filter])->links() }}
             </div>
         </div>
     </div>

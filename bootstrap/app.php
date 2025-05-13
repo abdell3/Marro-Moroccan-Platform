@@ -28,9 +28,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
             'auth.session' => \Illuminate\Session\Middleware\AuthenticateSession::class,
             'guest' => \Illuminate\Auth\Middleware\RedirectIfAuthenticated::class,
+            
         ]);
         
-        // Configuration des groupes de middleware
         $middleware->group('web', [
             \Illuminate\Cookie\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
@@ -38,9 +38,9 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \Illuminate\Foundation\Http\Middleware\ValidateCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            
         ]);
         
-        // Configuration explicite de la route posts/create
         $middleware->group('create_post', [
             \Illuminate\Cookie\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
@@ -50,10 +50,8 @@ return Application::configure(basePath: dirname(__DIR__))
             EnsureAuth::class,
         ]);
         
-        // Configuration de la redirection des invités
         $middleware->redirectGuestsTo('/login');
         
-        // Validation CSRF
         $middleware->validateCsrfTokens(except: [
             'api/*'
         ]);

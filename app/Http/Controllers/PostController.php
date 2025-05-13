@@ -30,16 +30,7 @@ class PostController extends Controller
 
     public function index()
     {
-        // Option 1: Utilisons getDerniersPostsPagines à la place de getAllPosts
         $posts = $this->postService->getDerniersPostsPagines(10);
-        
-        // Debug: Ajoutons des informations pour vérifier la pagination
-        if ($posts instanceof \Illuminate\Pagination\LengthAwarePaginator) {
-            \Illuminate\Support\Facades\Log::info('Pagination trouvée: ' . $posts->total() . ' éléments, ' . $posts->perPage() . ' par page');
-        } else {
-            \Illuminate\Support\Facades\Log::warning('Pas de pagination!');  
-        }
-        
         return view('posts.index', compact('posts'));
     }
 
@@ -61,6 +52,14 @@ class PostController extends Controller
     {
         $data = $request->validated();
         $data['auteur_id'] = Auth::id();
+        $communityId = $request->input('community_id');
+        $community = $this->communityService->getCommunityById($communityId);
+        
+        if ($community && $community->isUserBanned(Auth::id())) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Vous êtes banni de cette communauté et ne pouvez pas publier de contenu.');
+        }
         $postType = $request->input('post_type', 'text');
         $data['typeContenu'] = $postType;
         switch ($postType) {
@@ -143,11 +142,9 @@ class PostController extends Controller
 
     public function edit(Post $post)
     {
-        // Vérification manuelle des autorisations
         if (!Auth::check() || Auth::id() != $post->auteur_id) {
             abort(403, 'Vous n\'êtes pas autorisé à modifier ce post.');
         }
-        
         $communities = $this->communityService->getAllCommunities();
         $tagService = app(TagServiceInterface::class);
         $existingTags = $tagService->getAllTagsAlpha();
@@ -188,7 +185,6 @@ class PostController extends Controller
 
     public function destroy(Post $post)
     {
-        // Vérification manuelle des autorisations
         if (!Auth::check() || Auth::id() != $post->auteur_id) {
             abort(403, 'Vous n\'êtes pas autorisé à supprimer ce post.');
         }
@@ -247,7 +243,6 @@ class PostController extends Controller
     public function save(Post $post)
     {
         $result = $this->postService->sauvegarderPost($post->id, Auth::id());
-        
         if (request()->ajax()) {
             return response()->json([
                 'success' => true,
@@ -261,7 +256,6 @@ class PostController extends Controller
     public function unsave(Post $post)
     {
         $result = $this->postService->enleverPostSauvegarde($post->id, Auth::id());
-        
         if (request()->ajax()) {
             return response()->json([
                 'success' => true,

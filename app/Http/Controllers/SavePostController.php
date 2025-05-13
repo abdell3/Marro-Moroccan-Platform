@@ -6,7 +6,7 @@ use App\Models\SavePost;
 use App\Http\Requests\StoreSavePostRequest;
 use App\Http\Requests\UpdateSavePostRequest;
 use App\Services\Interfaces\SavePostServiceInterface;
-use Illuminate\Routing\Controller;
+use App\Http\Controllers\Controller;
 
 class SavePostController extends Controller
 {
@@ -15,7 +15,7 @@ class SavePostController extends Controller
     public function __construct(SavePostServiceInterface $savePostService)
     {
         $this->savePostService = $savePostService;
-        $this->authorizeResource(SavePost::class, 'savePost');
+        $this->middleware('auth');
     }
 
     public function index()

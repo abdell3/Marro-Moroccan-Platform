@@ -37,7 +37,6 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => bcrypt('password'),
             'role_id' => $roleId,
-            'badge_id' => $badgeId,
             'token' => null,
             'avatar' => 'avatars/default.png',
             'preferences' => null,
